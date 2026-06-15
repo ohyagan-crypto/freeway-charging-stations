@@ -25,6 +25,7 @@
       <nav aria-label="頁面導覽">
         <a href="#overview">總覽</a>
         <a href="#n1">國道一號</a>
+        <a href="#nearest">最近站點</a>
         <a href="#n2">國道二號</a>
         <a href="#sources">資料來源</a>
       </nav>
@@ -33,14 +34,14 @@
     <main id="top">
       <section class="hero">
         <div class="hero-copy">
-          <p class="label">CCS1 / CCS2 充電槍數整理</p>
+          <p class="label">CCS1 / CCS2 即時查詢輔助</p>
           <h1>國道一號、國道二號服務區快充站一覽</h1>
           <p class="lead">
-            依照目前公開資料整理國道服務區快充／超充站資訊，重點標示每個休息站、服務區的 CCS1 與 CCS2 充電槍數，方便出發前快速判斷補電點。
+            依照公開資料整理國道服務區快充／超充站資訊，標示每個休息站、服務區的 CCS1 與 CCS2 槍數、目前可查到的充電價格，並加入 GPS 最近站點與即時使用狀態輔助。
           </p>
           <div class="hero-actions">
             <a class="btn primary" href="#n1">查看槍數表</a>
-            <a class="btn secondary" href="#sources">看資料來源</a>
+            <a class="btn secondary" href="#nearest">找最近站點</a>
           </div>
         </div>
 
@@ -63,8 +64,8 @@
               <span>CCS2 合計槍數</span>
             </div>
             <div>
-              <b>0</b>
-              <span>國道二號服務區</span>
+              <b id="liveUpdated">讀取中</b>
+              <span>即時狀態更新</span>
             </div>
           </div>
         </aside>
@@ -83,9 +84,25 @@
         </article>
         <article>
           <span>重點 03</span>
-          <h2>槍型以 CCS1、CCS2 分開標示</h2>
-          <p>每站直接列出 CCS1 與 CCS2 槍數，開車前可先比對車款接頭與路線方向。</p>
+          <h2>可查詢價格、使用狀態與最近站</h2>
+          <p>頁面會嘗試讀取公開即時頁的充電槍狀態，GPS 功能則在你同意定位後計算距離最近的服務區。</p>
         </article>
+      </section>
+
+      <section class="section nearest" id="nearest">
+        <div class="nearest-card">
+          <div>
+            <p class="label">GPS Nearest Station</p>
+            <h2>找離你最近的國道一號快充站</h2>
+            <p>
+              點下按鈕後，瀏覽器會詢問定位權限。定位只在你的裝置上用來計算距離，不會送到我們的伺服器保存。
+            </p>
+          </div>
+          <div class="nearest-action">
+            <button class="btn primary" id="locateBtn" type="button">使用 GPS 找最近站</button>
+            <div class="nearest-result" id="nearestResult">尚未定位</div>
+          </div>
+        </div>
       </section>
 
       <section class="section" id="n1">
@@ -103,6 +120,8 @@
                 <th>CCS1</th>
                 <th>CCS2</th>
                 <th>合計</th>
+                <th>當下可查價格</th>
+                <th>即時使用狀態</th>
               </tr>
             </thead>
             <tbody id="stationRows"></tbody>
@@ -148,7 +167,13 @@
           <a href="https://www.fetnet.net/content/cbu/tw/lifecircle/tech/2024/09/highway.html" target="_blank" rel="noreferrer">
             國道服務區充電樁數量整理
           </a>
+          <a href="https://www.opendata.vip/tdx/evFreeway" target="_blank" rel="noreferrer">
+            全台高速公路服務區充電樁即時查詢
+          </a>
         </div>
+        <p class="source-note">
+          即時狀態與價格來源可能因業者、會員身份、時段或公開頁可讀取狀態而變動，實際充電前請以充電服務商 App 或現場公告為準。
+        </p>
       </section>
     </main>
 
