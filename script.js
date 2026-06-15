@@ -96,7 +96,11 @@ const bars = document.getElementById("bars");
 const locateBtn = document.getElementById("locateBtn");
 const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
+const tripForm = document.getElementById("tripForm");
+const plannerResult = document.getElementById("plannerResult");
 const maxTotal = Math.max(...stations.map((station) => station.ccs1 + station.ccs2));
+const briaBatteryKwh = 57.7;
+const briaEfficiencyKmPerKwh = 5.3;
 
 rows.innerHTML = stations
   .map((station, index) => {
@@ -215,3 +219,65 @@ async function updateLiveStatus() {
 }
 
 updateLiveStatus();
+
+function estimateSocAfterDistance(currentSoc, distanceKmValue) {
+  const usableKwh = (currentSoc / 100) * briaBatteryKwh;
+  const usedKwh = distanceKmValue / briaEfficiencyKmPerKwh;
+  return ((usableKwh - usedKwh) / briaBatteryKwh) * 100;
+}
+
+function suggestChargingStation(tripKm, currentSoc, reserveSoc) {
+  const maxReachBeforeReserve =
+    ((currentSoc - reserveSoc) / 100) * briaBatteryKwh * briaEfficiencyKmPerKwh;
+  const targetKm = Math.max(0, Math.min(tripKm, maxReachBeforeReserve * 0.75));
+  const ranked = stations
+    .map((station) => {
+      const stationTotal = station.ccs1 + station.ccs2;
+      const relativePosition = (stations.indexOf(station) + 1) / (stations.length + 1);
+      const estimatedAlongRouteKm = relativePosition * tripKm;
+      return {
+        ...station,
+        stationTotal,
+        estimatedAlongRouteKm,
+        score: Math.abs(estimatedAlongRouteKm - targetKm) - stationTotal * 2,
+      };
+    })
+    .sort((a, b) => a.score - b.score);
+  return ranked[0];
+}
+
+tripForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const tripKm = Number(document.getElementById("tripKm").value);
+  const currentSoc = Number(document.getElementById("currentSoc").value);
+  const reserveSoc = Number(document.getElementById("reserveSoc").value);
+  const startPlace = document.getElementById("startPlace").value.trim() || "出發地";
+  const endPlace = document.getElementById("endPlace").value.trim() || "目的地";
+
+  if (!tripKm || tripKm <= 0 || currentSoc <= 0) {
+    plannerResult.innerHTML = `<strong>請先輸入有效的行程距離與目前電量。</strong>`;
+    return;
+  }
+
+  const fullRange = briaBatteryKwh * briaEfficiencyKmPerKwh;
+  const currentRange = (currentSoc / 100) * fullRange;
+  const reserveKm = (reserveSoc / 100) * fullRange;
+  const arrivalSoc = estimateSocAfterDistance(currentSoc, tripKm);
+  const needCharge = arrivalSoc < reserveSoc;
+  const station = suggestChargingStation(tripKm, currentSoc, reserveSoc);
+  const stationArrivalSoc = estimateSocAfterDistance(currentSoc, station.estimatedAlongRouteKm);
+  const suggestedChargeToSoc = Math.min(90, Math.max(65, reserveSoc + ((tripKm - station.estimatedAlongRouteKm) / fullRange) * 100 + 15));
+  const finalSocAfterCharge = estimateSocAfterDistance(
+    suggestedChargeToSoc,
+    tripKm - station.estimatedAlongRouteKm
+  );
+
+  plannerResult.innerHTML = `
+    <strong>${startPlace} → ${endPlace}</strong>
+    <span>Bria 滿電估算續航約 ${fullRange.toFixed(0)} 公里；目前 ${currentSoc}% 約可跑 ${currentRange.toFixed(0)} 公里。</span>
+    <span>不充電直達預估剩 ${arrivalSoc.toFixed(1)}%。${needCharge ? "建議提早規劃充電。" : "若路況正常，可達目的地並保留設定電量。"}</span>
+    <span>建議補電站：${station.name}，粗估在行程約 ${station.estimatedAlongRouteKm.toFixed(0)} 公里處，抵達該站約剩 ${stationArrivalSoc.toFixed(1)}%。</span>
+    <span>建議至少充到 ${suggestedChargeToSoc.toFixed(0)}%，抵達目的地約剩 ${finalSocAfterCharge.toFixed(1)}%。</span>
+    <small>提醒：這是依平均電耗估算，實際會受車速、冷氣、載重、天氣、上坡與塞車影響；長途建議保留 10% 到 20% 緩衝。</small>
+  `;
+});

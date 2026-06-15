@@ -26,6 +26,7 @@
         <a href="#overview">總覽</a>
         <a href="#n1">國道一號</a>
         <a href="#nearest">最近站點</a>
+        <a href="#planner">行程規劃</a>
         <a href="#n2">國道二號</a>
         <a href="#sources">資料來源</a>
       </nav>
@@ -101,6 +102,49 @@
           <div class="nearest-action">
             <button class="btn primary" id="locateBtn" type="button">使用 GPS 找最近站</button>
             <div class="nearest-result" id="nearestResult">尚未定位</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section planner" id="planner">
+        <div class="section-head">
+          <p class="label">Bria Trip Planner</p>
+          <h2>鴻華 Bria 行程充電規劃</h2>
+          <p>預設以電池 57.7 度、平均電耗 5.3 km/度估算。輸入目前電量與目的地距離後，會推估是否需要提早充電、建議哪一站補電，以及抵達目的地約剩多少電。</p>
+        </div>
+
+        <div class="planner-card">
+          <form class="planner-form" id="tripForm">
+            <label>
+              出發地
+              <input id="startPlace" type="text" placeholder="例如：台北" />
+            </label>
+            <label>
+              目的地
+              <input id="endPlace" type="text" placeholder="例如：台南" />
+            </label>
+            <label>
+              全程預估距離（公里）
+              <input id="tripKm" type="number" min="1" step="1" placeholder="例如：310" required />
+            </label>
+            <label>
+              目前電量（%）
+              <input id="currentSoc" type="number" min="1" max="100" step="1" value="80" required />
+            </label>
+            <label>
+              希望抵達保留電量（%）
+              <input id="reserveSoc" type="number" min="0" max="50" step="1" value="15" required />
+            </label>
+            <label>
+              車款參數
+              <input value="鴻華 Bria｜57.7 度｜5.3 km/度" disabled />
+            </label>
+            <button class="btn primary" type="submit">估算充電規劃</button>
+          </form>
+
+          <div class="planner-result" id="plannerResult">
+            <strong>輸入行程資料後，我會幫你估算。</strong>
+            <span>若不知道精準里程，可以先用 Google Maps 估一個全程公里數。</span>
           </div>
         </div>
       </section>

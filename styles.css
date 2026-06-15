@@ -320,6 +320,80 @@ button.btn {
   line-height: 1.55;
 }
 
+.planner {
+  padding-top: 0;
+}
+
+.planner-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.planner-form,
+.planner-result {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: 0 16px 40px rgba(24, 42, 34, 0.06);
+}
+
+.planner-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+
+.planner-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.planner-form input {
+  min-height: 46px;
+  width: 100%;
+  padding: 0 14px;
+  color: var(--ink);
+  background: #f7faf6;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.planner-form input:disabled {
+  color: var(--green);
+  opacity: 1;
+}
+
+.planner-form button {
+  grid-column: 1 / -1;
+}
+
+.planner-result {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 24px;
+}
+
+.planner-result strong {
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.planner-result span,
+.planner-result small {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .section-head {
   max-width: 760px;
   margin-bottom: 26px;
@@ -478,7 +552,8 @@ footer {
 
   .hero,
   .overview,
-  .nearest-card {
+  .nearest-card,
+  .planner-card {
     grid-template-columns: 1fr;
   }
 }
@@ -501,6 +576,10 @@ footer {
   }
 
   .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-form {
     grid-template-columns: 1fr;
   }
 
