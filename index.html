@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>國道一號、二號快充站槍數整理</title>
+    <meta
+      name="description"
+      content="國道一號與國道二號服務區快充／超充站整理，包含 CCS1、CCS2 各服務區充電槍數。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="回到頁首">
+        <span class="brand-icon">⚡</span>
+        <span>國道快充整理</span>
+      </a>
+      <nav aria-label="頁面導覽">
+        <a href="#overview">總覽</a>
+        <a href="#n1">國道一號</a>
+        <a href="#n2">國道二號</a>
+        <a href="#sources">資料來源</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="label">CCS1 / CCS2 充電槍數整理</p>
+          <h1>國道一號、國道二號服務區快充站一覽</h1>
+          <p class="lead">
+            依照目前公開資料整理國道服務區快充／超充站資訊，重點標示每個休息站、服務區的 CCS1 與 CCS2 充電槍數，方便出發前快速判斷補電點。
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#n1">查看槍數表</a>
+            <a class="btn secondary" href="#sources">看資料來源</a>
+          </div>
+        </div>
+
+        <aside class="summary-card" aria-label="資料摘要">
+          <div class="summary-head">
+            <span>目前整理</span>
+            <strong>國道 1、2 號</strong>
+          </div>
+          <div class="metric-grid">
+            <div>
+              <b>10</b>
+              <span>國道一號站點</span>
+            </div>
+            <div>
+              <b>31</b>
+              <span>CCS1 合計槍數</span>
+            </div>
+            <div>
+              <b>31</b>
+              <span>CCS2 合計槍數</span>
+            </div>
+            <div>
+              <b>0</b>
+              <span>國道二號服務區</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="overview" id="overview">
+        <article>
+          <span>重點 01</span>
+          <h2>國道一號有多個服務區快充站</h2>
+          <p>目前整理到中壢、湖口、泰安、西螺、新營、仁德等服務區，其中部分分為北上與南下站點。</p>
+        </article>
+        <article>
+          <span>重點 02</span>
+          <h2>國道二號未列服務區快充站</h2>
+          <p>高公局公布的國道快充路網列有國道 1、3、5、6 號，沒有列到國道 2 號服務區快充站。</p>
+        </article>
+        <article>
+          <span>重點 03</span>
+          <h2>槍型以 CCS1、CCS2 分開標示</h2>
+          <p>每站直接列出 CCS1 與 CCS2 槍數，開車前可先比對車款接頭與路線方向。</p>
+        </article>
+      </section>
+
+      <section class="section" id="n1">
+        <div class="section-head">
+          <p class="label">National Freeway 1</p>
+          <h2>國道一號快充／超充站槍數</h2>
+          <p>以下以服務區與方向整理，數字單位皆為「充電槍」。</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>休息站／服務區</th>
+                <th>CCS1</th>
+                <th>CCS2</th>
+                <th>合計</th>
+              </tr>
+            </thead>
+            <tbody id="stationRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section chart-section">
+        <div class="section-head">
+          <p class="label">Quick Compare</p>
+          <h2>各站槍數快速比較</h2>
+          <p>長條越長代表該站 CCS1、CCS2 合計槍數越多。</p>
+        </div>
+        <div class="bars" id="bars"></div>
+      </section>
+
+      <section class="section n2" id="n2">
+        <div class="empty-card">
+          <p class="label">National Freeway 2</p>
+          <h2>國道二號目前沒有服務區／休息站快充站可列</h2>
+          <p>
+            目前公開資料查到的國道快充路網包含國道 1、3、5、6 號共 23 站，沒有列到國道二號，因此本頁國道二號 CCS1、CCS2 槍數以 0 筆處理。
+          </p>
+        </div>
+      </section>
+
+      <section class="section sources" id="sources">
+        <div class="section-head">
+          <p class="label">Sources</p>
+          <h2>資料來源</h2>
+        </div>
+        <div class="source-list">
+          <a href="https://www.freeway.gov.tw/Publish.aspx?cnid=193&p=37511" target="_blank" rel="noreferrer">
+            高公局國道充電路網全面上線
+          </a>
+          <a
+            href="https://www.motc.gov.tw/ch/app/news_list/view?id=14&module=news&serno=93536a10-a889-45d8-bd7b-fc94b6c384d9"
+            target="_blank"
+            rel="noreferrer"
+          >
+            交通部新聞稿
+          </a>
+          <a href="https://www.fetnet.net/content/cbu/tw/lifecircle/tech/2024/09/highway.html" target="_blank" rel="noreferrer">
+            國道服務區充電樁數量整理
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>國道快充資料整理</span>
+      <span>出發前仍建議以充電服務商即時狀態為準。</span>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
