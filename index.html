@@ -58,15 +58,17 @@
               出發地
               <span class="map-input-row">
                 <input id="startPlace" type="text" placeholder="例如：高雄市鼓山區南屏路599號" />
-                <button class="btn map-btn" type="button" data-map-search="startPlace">地圖搜尋</button>
+                <button class="btn map-btn" type="button" data-place-search="startPlace">頁內搜尋</button>
               </span>
+              <div class="place-results" id="startPlaceResults" hidden></div>
             </label>
             <label>
               目的地
               <span class="map-input-row">
                 <input id="endPlace" type="text" placeholder="例如：台中新都心或完整地址" />
-                <button class="btn map-btn" type="button" data-map-search="endPlace">地圖搜尋</button>
+                <button class="btn map-btn" type="button" data-place-search="endPlace">頁內搜尋</button>
               </span>
+              <div class="place-results" id="endPlaceResults" hidden></div>
             </label>
             <label>
               行駛方向
@@ -78,7 +80,7 @@
             <label>
               全程預估距離（公里）
               <input id="tripKm" type="number" min="1" step="1" placeholder="請填導航顯示的實際公里數" required />
-              <small class="field-hint">可先用 Google 地圖開路線，確認位置與公里數後再填入。</small>
+              <small class="field-hint">搜尋並選定出發地、目的地後，系統會自動估算並回填。</small>
             </label>
             <label>
               目前電量（%）
@@ -98,14 +100,31 @@
             </label>
             <div class="form-actions">
               <button class="btn primary" type="submit">安排充電路線</button>
-              <button class="btn secondary" id="openMapsRouteBtn" type="button">開 Google 導航</button>
+              <button class="btn secondary" id="estimateDistanceBtn" type="button">搜尋並估算公里數</button>
             </div>
           </form>
 
           <div class="planner-result result-panel" id="plannerResult">
             <strong>輸入行程資料後，我會幫你規劃。</strong>
-            <span>可先用地圖搜尋確認出發地與目的地，再開 Google 導航查看實際公里數；系統會依你填入的公里數計算電量與補電安排。</span>
+            <span>請先在出發地與目的地按「頁內搜尋」，選到正確位置後會在下方地圖預覽路線，並自動把公里數填入表單。</span>
           </div>
+        </div>
+
+        <div class="map-preview-panel">
+          <div class="map-preview-head">
+            <div>
+              <strong>頁內地圖搜尋</strong>
+              <span id="mapPreviewStatus">尚未搜尋位置</span>
+            </div>
+            <button class="btn secondary" id="refreshMapPreviewBtn" type="button">更新地圖</button>
+          </div>
+          <iframe
+            id="mapPreview"
+            title="Google 地圖預覽"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=%E5%8F%B0%E7%81%A3&output=embed"
+          ></iframe>
         </div>
       </section>
 

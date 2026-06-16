@@ -123,12 +123,35 @@ const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
 const plannerResult = document.getElementById("plannerResult");
-const openMapsRouteBtn = document.getElementById("openMapsRouteBtn");
+const estimateDistanceBtn = document.getElementById("estimateDistanceBtn");
+const refreshMapPreviewBtn = document.getElementById("refreshMapPreviewBtn");
+const mapPreview = document.getElementById("mapPreview");
+const mapPreviewStatus = document.getElementById("mapPreviewStatus");
 const networkList = document.getElementById("networkList");
 const slowList = document.getElementById("slowList");
 const maxTotal = Math.max(...stations.map((station) => station.ccs1 + station.ccs2));
 const briaBatteryKwh = 57.7;
 const briaEfficiencyKmPerKwh = 5.3;
+const selectedPlaces = {
+  startPlace: null,
+  endPlace: null,
+};
+let distanceEstimateMode = "";
+let planRendered = false;
+const fallbackPlaces = [
+  {
+    display_name: "高雄市鼓山區南屏路599號",
+    lat: "22.6634",
+    lon: "120.2986",
+    aliases: ["高雄市鼓山區南屏路599號", "南屏路599", "南屏路599號", "龍子里南屏路599"],
+  },
+  {
+    display_name: "台中新都心，台中市西屯區",
+    lat: "24.1683",
+    lon: "120.6439",
+    aliases: ["台中新都心", "新都心", "台中 新都心"],
+  },
+];
 
 rows.innerHTML = stations
   .map((station, index) => {
@@ -293,47 +316,207 @@ function cleanPlaceInput(value) {
   return value.trim().replace(/\s+/g, " ");
 }
 
-function openGoogleMapsSearch(query) {
-  const cleanQuery = cleanPlaceInput(query);
-  if (!cleanQuery) return false;
-  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanQuery)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
-  return true;
+function getPlaceLabel(place) {
+  return place?.display_name || "";
 }
 
-function openGoogleMapsRoute(origin, destination) {
-  const cleanOrigin = cleanPlaceInput(origin);
-  const cleanDestination = cleanPlaceInput(destination);
-  if (!cleanOrigin || !cleanDestination) return false;
-  const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(cleanOrigin)}&destination=${encodeURIComponent(cleanDestination)}&travelmode=driving`;
-  window.open(url, "_blank", "noopener,noreferrer");
-  return true;
+function setPlannerNotice(title, body) {
+  planRendered = false;
+  plannerResult.innerHTML = `
+    <strong>${title}</strong>
+    <span>${body}</span>
+  `;
 }
 
-document.querySelectorAll("[data-map-search]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const input = document.getElementById(button.dataset.mapSearch);
-    const opened = openGoogleMapsSearch(input?.value || "");
-    if (!opened) {
-      plannerResult.innerHTML = `
-        <strong>請先輸入要搜尋的位置</strong>
-        <span>可以輸入完整地址、地標或店名；若地點名稱太模糊，請在 Google 地圖中選到正確位置後，再把導航公里數填回來。</span>
-      `;
+function resetSelectedPlace(inputId) {
+  selectedPlaces[inputId] = null;
+  const results = document.getElementById(`${inputId}Results`);
+  if (results) results.hidden = true;
+  distanceEstimateMode = "";
+  planRendered = false;
+}
+
+async function searchPlaces(inputId, options = {}) {
+  const input = document.getElementById(inputId);
+  const results = document.getElementById(`${inputId}Results`);
+  const query = cleanPlaceInput(input.value);
+  selectedPlaces[inputId] = null;
+
+  if (!query) {
+    results.hidden = true;
+    setPlannerNotice("請先輸入要搜尋的位置", "可以輸入完整地址、地標或店名；搜尋結果會直接顯示在頁面內，不會跳出 Google 地圖。");
+    return;
+  }
+
+  results.hidden = false;
+  results.innerHTML = `<span class="field-hint">搜尋中...</span>`;
+
+  try {
+    const fallbackMatches = findFallbackPlaces(query);
+    const remotePlaces = await fetchPlaces(query);
+    const places = dedupePlaces([...fallbackMatches, ...remotePlaces]);
+
+    if (!places.length) {
+      results.innerHTML = `<span class="field-hint">找不到位置，請改用更完整的地址或地標名稱。</span>`;
+      setPlannerNotice("查不到位置", "請把地址補完整，例如城市、行政區、路名與門牌；目的地若是簡稱，也建議加上縣市。");
+      return;
     }
+
+    results.innerHTML = places
+      .map((place, index) => `
+        <button class="place-option" type="button" data-place-index="${index}">
+          <strong>${getPlaceLabel(place)}</strong>
+          <span>座標 ${Number(place.lat).toFixed(5)}, ${Number(place.lon).toFixed(5)}</span>
+        </button>
+      `)
+      .join("");
+
+    const placeOptions = results.querySelectorAll(".place-option");
+    placeOptions.forEach((option) => {
+      option.addEventListener("click", async () => {
+        const place = places[Number(option.dataset.placeIndex)];
+        await selectPlace(inputId, place, option);
+      });
+    });
+
+    if (options.autoSelect && places[0]) {
+      await selectPlace(inputId, places[0], placeOptions[0]);
+    }
+  } catch {
+    results.innerHTML = `<span class="field-hint">位置搜尋暫時失敗，請稍後再試。</span>`;
+    setPlannerNotice("位置搜尋失敗", "目前無法取得頁內搜尋結果，請稍後重試；已輸入的公里數仍可手動安排充電路線。");
+  }
+}
+
+async function fetchPlaces(query) {
+  const endpoints = [
+    `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=tw&q=${encodeURIComponent(query)}`,
+    `https://r.jina.ai/http://https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=tw&q=${encodeURIComponent(query)}`,
+  ];
+
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
+      if (!response.ok) continue;
+      const text = await response.text();
+      const jsonStart = text.indexOf("[");
+      const payload = jsonStart > 0 ? text.slice(jsonStart) : text;
+      const places = JSON.parse(payload);
+      if (Array.isArray(places)) return places;
+    } catch {
+      continue;
+    }
+  }
+
+  return [];
+}
+
+function dedupePlaces(places) {
+  const seen = new Set();
+  return places.filter((place) => {
+    const key = `${Number(place.lat).toFixed(4)},${Number(place.lon).toFixed(4)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function findFallbackPlaces(query) {
+  const normalizedQuery = query.toLowerCase();
+  return fallbackPlaces.filter((place) =>
+    place.aliases.some((alias) => normalizedQuery.includes(alias.toLowerCase()) || alias.toLowerCase().includes(normalizedQuery))
+  );
+}
+
+async function selectPlace(inputId, place, option) {
+  const input = document.getElementById(inputId);
+  const results = document.getElementById(`${inputId}Results`);
+  selectedPlaces[inputId] = place;
+  input.value = getPlaceLabel(place);
+  results.querySelectorAll(".place-option").forEach((item) => item.classList.remove("selected"));
+  option?.classList.add("selected");
+  updateMapPreview();
+  await autoEstimateDistanceIfReady();
+}
+
+function updateMapPreview() {
+  const start = selectedPlaces.startPlace;
+  const end = selectedPlaces.endPlace;
+  const startText = cleanPlaceInput(document.getElementById("startPlace").value);
+  const endText = cleanPlaceInput(document.getElementById("endPlace").value);
+
+  if (start && end) {
+    const origin = `${start.lat},${start.lon}`;
+    const destination = `${end.lat},${end.lon}`;
+    mapPreview.src = `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}`;
+    mapPreviewStatus.textContent = "已顯示頁內路線預覽，公里數已自動估算。";
+    return;
+  }
+
+  const query = startText || endText || "台灣";
+  mapPreview.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+  mapPreviewStatus.textContent = query === "台灣" ? "尚未搜尋位置" : "已顯示單一位置預覽，請再選另一個位置估算公里數。";
+}
+
+function estimateSelectedPlacesStraightDistance() {
+  const start = selectedPlaces.startPlace;
+  const end = selectedPlaces.endPlace;
+  if (!start || !end) return null;
+  const straightKm = distanceKm(Number(start.lat), Number(start.lon), Number(end.lat), Number(end.lon));
+  distanceEstimateMode = "座標估算";
+  return Math.round(straightKm * 1.25);
+}
+
+async function estimateSelectedPlacesRouteDistance() {
+  const start = selectedPlaces.startPlace;
+  const end = selectedPlaces.endPlace;
+  if (!start || !end) return null;
+
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${start.lon},${start.lat};${end.lon},${end.lat}?overview=false`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("路線估算失敗");
+    const data = await response.json();
+    const meters = data?.routes?.[0]?.distance;
+    if (!meters) throw new Error("缺少距離");
+    distanceEstimateMode = "道路路線估算";
+    return Math.round(meters / 1000);
+  } catch {
+    return estimateSelectedPlacesStraightDistance();
+  }
+}
+
+async function autoEstimateDistanceIfReady() {
+  const estimatedKm = await estimateSelectedPlacesRouteDistance();
+  if (!estimatedKm) return false;
+  document.getElementById("tripKm").value = estimatedKm;
+  if (!planRendered) {
+    setPlannerNotice(
+      "公里數已自動估算",
+      `已依頁內搜尋到的兩個位置以${distanceEstimateMode}約 ${estimatedKm} 公里，並填入全程預估距離。實際導航可能因路線與路況略有不同。`
+    );
+  }
+  return true;
+}
+
+document.querySelectorAll("[data-place-search]").forEach((button) => {
+  button.addEventListener("click", () => {
+    searchPlaces(button.dataset.placeSearch);
   });
 });
 
-openMapsRouteBtn.addEventListener("click", () => {
-  const startPlace = document.getElementById("startPlace").value;
-  const endPlace = document.getElementById("endPlace").value;
-  const opened = openGoogleMapsRoute(startPlace, endPlace);
-  if (!opened) {
-    plannerResult.innerHTML = `
-      <strong>請先輸入出發地與目的地</strong>
-      <span>出發地與目的地都填好後，就能直接開 Google 地圖路線，確認實際位置與全程公里數。</span>
-    `;
+estimateDistanceBtn.addEventListener("click", async () => {
+  if (!selectedPlaces.startPlace) await searchPlaces("startPlace", { autoSelect: true });
+  if (!selectedPlaces.endPlace) await searchPlaces("endPlace", { autoSelect: true });
+  if (!(await autoEstimateDistanceIfReady())) {
+    setPlannerNotice("請先選定出發地與目的地", "搜尋結果出現後，請各點選一個正確位置；選好後系統會在頁面內顯示路線並自動填公里數。");
   }
 });
+
+refreshMapPreviewBtn.addEventListener("click", updateMapPreview);
+
+document.getElementById("startPlace").addEventListener("input", () => resetSelectedPlace("startPlace"));
+document.getElementById("endPlace").addEventListener("input", () => resetSelectedPlace("endPlace"));
 
 function estimateSocAfterDistance(currentSoc, distanceKmValue) {
   const usableKwh = (currentSoc / 100) * briaBatteryKwh;
@@ -398,13 +581,13 @@ function buildChargingPlan(tripKm, currentSoc, reserveSoc, direction) {
   return { stops, impossible: false, finalSoc: estimateSocAfterDistance(soc, tripKm - currentPosition) };
 }
 
-tripForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+function renderChargingPlan() {
+  planRendered = true;
   const tripKmInput = document.getElementById("tripKm");
   if (!tripKmInput.value) {
     plannerResult.innerHTML = `
       <strong>還不能安排路線</strong>
-      <span>請先填入導航顯示的全程公里數；地址不做自動推估。</span>
+      <span>請先搜尋出發地與目的地，讓系統自動估算公里數；也可以手動填入公里數。</span>
     `;
     return;
   }
@@ -441,4 +624,9 @@ tripForm.addEventListener("submit", async (event) => {
     <span><b>建議充電安排：</b><br>${stopText}</span>
     <small>提醒：這是依平均電耗估算，實際會受車速、冷氣、載重、天氣、上坡與塞車影響；長途建議保留 10% 到 20% 緩衝。</small>
   `;
+}
+
+tripForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  renderChargingPlan();
 });
