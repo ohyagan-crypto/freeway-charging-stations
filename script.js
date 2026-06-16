@@ -138,6 +138,7 @@ const selectedPlaces = {
 };
 let distanceEstimateMode = "";
 let planRendered = false;
+let directionAutoDetected = false;
 const fallbackPlaces = [
   {
     display_name: "高雄市鼓山區南屏路599號",
@@ -333,6 +334,7 @@ function resetSelectedPlace(inputId) {
   const results = document.getElementById(`${inputId}Results`);
   if (results) results.hidden = true;
   distanceEstimateMode = "";
+  directionAutoDetected = false;
   planRendered = false;
 }
 
@@ -436,7 +438,30 @@ async function selectPlace(inputId, place, option) {
   results.querySelectorAll(".place-option").forEach((item) => item.classList.remove("selected"));
   option?.classList.add("selected");
   updateMapPreview();
+  autoDetectRouteDirection();
   await autoEstimateDistanceIfReady();
+}
+
+function getAutoRouteDirection() {
+  const start = selectedPlaces.startPlace;
+  const end = selectedPlaces.endPlace;
+  if (!start || !end) return null;
+  const startLat = Number(start.lat);
+  const endLat = Number(end.lat);
+  if (!Number.isFinite(startLat) || !Number.isFinite(endLat)) return null;
+  return endLat >= startLat ? "north" : "south";
+}
+
+function getDirectionLabel(direction) {
+  return direction === "north" ? "南往北" : "北往南";
+}
+
+function autoDetectRouteDirection() {
+  const direction = getAutoRouteDirection();
+  if (!direction) return false;
+  document.getElementById("routeDirection").value = direction;
+  directionAutoDetected = true;
+  return true;
 }
 
 function updateMapPreview() {
@@ -489,11 +514,13 @@ async function estimateSelectedPlacesRouteDistance() {
 async function autoEstimateDistanceIfReady() {
   const estimatedKm = await estimateSelectedPlacesRouteDistance();
   if (!estimatedKm) return false;
+  autoDetectRouteDirection();
   document.getElementById("tripKm").value = estimatedKm;
   if (!planRendered) {
+    const direction = document.getElementById("routeDirection").value;
     setPlannerNotice(
       "公里數已自動估算",
-      `已依頁內搜尋到的兩個位置以${distanceEstimateMode}約 ${estimatedKm} 公里，並填入全程預估距離。實際導航可能因路線與路況略有不同。`
+      `已依頁內搜尋到的兩個位置以${distanceEstimateMode}約 ${estimatedKm} 公里，並填入全程預估距離；方向已自動判斷為${getDirectionLabel(direction)}。實際導航可能因路線與路況略有不同。`
     );
   }
   return true;
@@ -618,6 +645,7 @@ function renderChargingPlan() {
 
   plannerResult.innerHTML = `
     <strong>${startPlace} → ${endPlace}</strong>
+    <span>行駛方向：${getDirectionLabel(direction)}${directionAutoDetected ? "（系統依出發地與目的地自動判斷）" : ""}</span>
     <span>Bria 滿電估算續航約 ${fullRange.toFixed(0)} 公里；目前 ${currentSoc}% 約可跑 ${currentRange.toFixed(0)} 公里。</span>
     <span>不充電直達預估剩 ${arrivalSoc.toFixed(1)}%。${needCharge ? "建議提早規劃充電。" : "若路況正常，可達目的地並保留設定電量。"}</span>
     <span>${plan.impossible ? "目前電量不足以安全抵達下一個內建非特斯拉候選站，建議出發前先補電。" : `預估抵達目的地約剩 ${(plan.finalSoc ?? arrivalSoc).toFixed(1)}%。`}</span>
