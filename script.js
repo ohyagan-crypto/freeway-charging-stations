@@ -123,6 +123,7 @@ const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
 const plannerResult = document.getElementById("plannerResult");
+const openMapsRouteBtn = document.getElementById("openMapsRouteBtn");
 const networkList = document.getElementById("networkList");
 const slowList = document.getElementById("slowList");
 const maxTotal = Math.max(...stations.map((station) => station.ccs1 + station.ccs2));
@@ -288,6 +289,52 @@ async function updateLiveStatus() {
 
 updateLiveStatus();
 
+function cleanPlaceInput(value) {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function openGoogleMapsSearch(query) {
+  const cleanQuery = cleanPlaceInput(query);
+  if (!cleanQuery) return false;
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanQuery)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+  return true;
+}
+
+function openGoogleMapsRoute(origin, destination) {
+  const cleanOrigin = cleanPlaceInput(origin);
+  const cleanDestination = cleanPlaceInput(destination);
+  if (!cleanOrigin || !cleanDestination) return false;
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(cleanOrigin)}&destination=${encodeURIComponent(cleanDestination)}&travelmode=driving`;
+  window.open(url, "_blank", "noopener,noreferrer");
+  return true;
+}
+
+document.querySelectorAll("[data-map-search]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const input = document.getElementById(button.dataset.mapSearch);
+    const opened = openGoogleMapsSearch(input?.value || "");
+    if (!opened) {
+      plannerResult.innerHTML = `
+        <strong>請先輸入要搜尋的位置</strong>
+        <span>可以輸入完整地址、地標或店名；若地點名稱太模糊，請在 Google 地圖中選到正確位置後，再把導航公里數填回來。</span>
+      `;
+    }
+  });
+});
+
+openMapsRouteBtn.addEventListener("click", () => {
+  const startPlace = document.getElementById("startPlace").value;
+  const endPlace = document.getElementById("endPlace").value;
+  const opened = openGoogleMapsRoute(startPlace, endPlace);
+  if (!opened) {
+    plannerResult.innerHTML = `
+      <strong>請先輸入出發地與目的地</strong>
+      <span>出發地與目的地都填好後，就能直接開 Google 地圖路線，確認實際位置與全程公里數。</span>
+    `;
+  }
+});
+
 function estimateSocAfterDistance(currentSoc, distanceKmValue) {
   const usableKwh = (currentSoc / 100) * briaBatteryKwh;
   const usedKwh = distanceKmValue / briaEfficiencyKmPerKwh;
@@ -366,8 +413,8 @@ tripForm.addEventListener("submit", async (event) => {
   const currentSoc = Number(document.getElementById("currentSoc").value);
   const reserveSoc = Number(document.getElementById("reserveSoc").value);
   const direction = document.getElementById("routeDirection").value;
-  const startPlace = document.getElementById("startPlace").value.trim() || "出發地";
-  const endPlace = document.getElementById("endPlace").value.trim() || "目的地";
+  const startPlace = cleanPlaceInput(document.getElementById("startPlace").value) || "出發地";
+  const endPlace = cleanPlaceInput(document.getElementById("endPlace").value) || "目的地";
 
   if (!tripKm || tripKm <= 0 || currentSoc <= 0) {
     plannerResult.innerHTML = `<strong>請先輸入有效的行程距離與目前電量。</strong>`;

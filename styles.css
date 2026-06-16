@@ -437,6 +437,19 @@ button.btn {
   font-weight: 900;
 }
 
+.map-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .planner-form input,
 .planner-form select {
   min-height: 46px;
@@ -456,8 +469,21 @@ button.btn {
   opacity: 1;
 }
 
-.planner-form button {
+.form-actions {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.map-btn {
+  min-height: 46px;
+  padding: 0 14px;
+  color: var(--green);
+  background: #eef7ee;
+  border: 1px solid rgba(31, 122, 77, 0.22);
+  border-radius: 14px;
+  white-space: nowrap;
 }
 
 .planner-result {
@@ -702,6 +728,11 @@ footer {
   }
 
   .planner-form {
+    grid-template-columns: 1fr;
+  }
+
+  .map-input-row,
+  .form-actions {
     grid-template-columns: 1fr;
   }
 

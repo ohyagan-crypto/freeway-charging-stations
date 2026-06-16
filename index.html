@@ -56,11 +56,17 @@
           <form class="planner-form primary-panel" id="tripForm">
             <label>
               出發地
-              <input id="startPlace" type="text" placeholder="例如：台北" />
+              <span class="map-input-row">
+                <input id="startPlace" type="text" placeholder="例如：高雄市鼓山區南屏路599號" />
+                <button class="btn map-btn" type="button" data-map-search="startPlace">地圖搜尋</button>
+              </span>
             </label>
             <label>
               目的地
-              <input id="endPlace" type="text" placeholder="例如：高雄" />
+              <span class="map-input-row">
+                <input id="endPlace" type="text" placeholder="例如：台中新都心或完整地址" />
+                <button class="btn map-btn" type="button" data-map-search="endPlace">地圖搜尋</button>
+              </span>
             </label>
             <label>
               行駛方向
@@ -72,6 +78,7 @@
             <label>
               全程預估距離（公里）
               <input id="tripKm" type="number" min="1" step="1" placeholder="請填導航顯示的實際公里數" required />
+              <small class="field-hint">可先用 Google 地圖開路線，確認位置與公里數後再填入。</small>
             </label>
             <label>
               目前電量（%）
@@ -89,12 +96,15 @@
               充電站篩選
               <input value="排除 Tesla，只排非特斯拉站點" disabled />
             </label>
-            <button class="btn primary" type="submit">安排充電路線</button>
+            <div class="form-actions">
+              <button class="btn primary" type="submit">安排充電路線</button>
+              <button class="btn secondary" id="openMapsRouteBtn" type="button">開 Google 導航</button>
+            </div>
           </form>
 
           <div class="planner-result result-panel" id="plannerResult">
             <strong>輸入行程資料後，我會幫你規劃。</strong>
-            <span>地址不做推估；請直接填導航顯示的全程公里數，系統只依你填入的公里數計算電量與補電安排。</span>
+            <span>可先用地圖搜尋確認出發地與目的地，再開 Google 導航查看實際公里數；系統會依你填入的公里數計算電量與補電安排。</span>
           </div>
         </div>
       </section>
