@@ -117,6 +117,7 @@ const nonTeslaChargers = [
 const rows = document.getElementById("stationRows");
 const bars = document.getElementById("bars");
 const locateBtn = document.getElementById("locateBtn");
+const calcDistanceBtn = document.getElementById("calcDistanceBtn");
 const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
@@ -181,6 +182,58 @@ function distanceKm(aLat, aLng, bLat, bLng) {
   return 2 * radius * Math.asin(Math.sqrt(h));
 }
 
+function getCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("這個瀏覽器不支援 GPS 定位"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000,
+    });
+  });
+}
+
+async function geocodeTaiwanPlace(place) {
+  const query = encodeURIComponent(`${place} 台灣`);
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=tw&q=${query}`,
+    { headers: { Accept: "application/json" } }
+  );
+  if (!response.ok) throw new Error("查不到地址");
+  const result = await response.json();
+  if (!result.length) throw new Error("查不到地址");
+  return { lat: Number(result[0].lat), lng: Number(result[0].lon), label: result[0].display_name };
+}
+
+async function estimateTripDistance() {
+  const startPlace = document.getElementById("startPlace").value.trim();
+  const endPlace = document.getElementById("endPlace").value.trim();
+  const tripKmInput = document.getElementById("tripKm");
+
+  if (!endPlace) {
+    throw new Error("請先輸入目的地");
+  }
+
+  const start = startPlace
+    ? await geocodeTaiwanPlace(startPlace)
+    : await getCurrentPosition().then(({ coords }) => ({
+        lat: coords.latitude,
+        lng: coords.longitude,
+        label: "目前 GPS 位置",
+      }));
+  const end = await geocodeTaiwanPlace(endPlace);
+
+  // Straight-line distance is too optimistic for driving. Taiwan highway trips are
+  // commonly longer than the air line, so use a conservative multiplier.
+  const estimatedKm = Math.ceil(distanceKm(start.lat, start.lng, end.lat, end.lng) * 1.25);
+  tripKmInput.value = estimatedKm;
+  return { estimatedKm, start, end };
+}
+
 locateBtn.addEventListener("click", () => {
   if (!navigator.geolocation) {
     nearestResult.textContent = "這個瀏覽器不支援 GPS 定位";
@@ -208,6 +261,28 @@ locateBtn.addEventListener("click", () => {
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
   );
+});
+
+calcDistanceBtn.addEventListener("click", async () => {
+  plannerResult.innerHTML = `
+    <strong>正在估算距離</strong>
+    <span>我會用出發地與目的地座標估算行車距離；若出發地空白，請允許瀏覽器取得目前位置。</span>
+  `;
+
+  try {
+    const { estimatedKm, start, end } = await estimateTripDistance();
+    plannerResult.innerHTML = `
+      <strong>距離已自動填入：約 ${estimatedKm} 公里</strong>
+      <span>出發：${start.label}</span>
+      <span>目的地：${end.label}</span>
+      <small>這是以座標距離乘上道路係數的估算值，長途規劃前可依導航實際公里數微調。</small>
+    `;
+  } catch (error) {
+    plannerResult.innerHTML = `
+      <strong>距離估算失敗</strong>
+      <span>${error.message || "請確認出發地、目的地或定位權限。"}</span>
+    `;
+  }
 });
 
 function extractLiveStatus(markdown, station) {
@@ -317,9 +392,26 @@ function buildChargingPlan(tripKm, currentSoc, reserveSoc, direction) {
   return { stops, impossible: false, finalSoc: estimateSocAfterDistance(soc, tripKm - currentPosition) };
 }
 
-tripForm.addEventListener("submit", (event) => {
+tripForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const tripKm = Number(document.getElementById("tripKm").value);
+  const tripKmInput = document.getElementById("tripKm");
+  if (!tripKmInput.value) {
+    plannerResult.innerHTML = `
+      <strong>正在先幫你估算距離</strong>
+      <span>請稍等，距離完成後會接著安排充電路線。</span>
+    `;
+    try {
+      await estimateTripDistance();
+    } catch (error) {
+      plannerResult.innerHTML = `
+        <strong>還不能安排路線</strong>
+        <span>${error.message || "請先輸入目的地，或手動填入全程公里數。"}</span>
+      `;
+      return;
+    }
+  }
+
+  const tripKm = Number(tripKmInput.value);
   const currentSoc = Number(document.getElementById("currentSoc").value);
   const reserveSoc = Number(document.getElementById("reserveSoc").value);
   const direction = document.getElementById("routeDirection").value;

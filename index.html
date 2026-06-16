@@ -60,7 +60,7 @@
             </label>
             <label>
               全程預估距離（公里）
-              <input id="tripKm" type="number" min="1" step="1" placeholder="例如：350" required />
+              <input id="tripKm" type="number" min="1" step="1" placeholder="會自動估算，可手動微調" />
             </label>
             <label>
               目前電量（%）
@@ -79,11 +79,12 @@
               <input value="排除 Tesla，只排非特斯拉站點" disabled />
             </label>
             <button class="btn primary" type="submit">安排充電路線</button>
+            <button class="btn secondary" id="calcDistanceBtn" type="button">自動估算距離</button>
           </form>
 
           <div class="planner-result" id="plannerResult">
             <strong>輸入行程資料後，我會幫你規劃。</strong>
-            <span>結果會包含是否需要提早充電、建議去哪一站、到站與抵達目的地預估剩餘電量。</span>
+            <span>出發地可填城市、地址或景點；若留空，會用手機 GPS 當出發點。距離會先用地圖座標估算，必要時仍可手動修正。</span>
           </div>
         </div>
       </section>
