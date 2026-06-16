@@ -91,6 +91,29 @@ const stations = [
   },
 ];
 
+const nonTeslaChargers = [
+  { name: "中壢服務區", road: "國道一號", direction: "雙向", routeKm: 57, lat: 24.9726, lng: 121.2496, operator: "iCharging / 公共快充", price: "會員價格，充電前依平台顯示為準", plugs: 10 },
+  { name: "湖口服務區北站", road: "國道一號", direction: "北上", routeKm: 86, lat: 24.8619, lng: 121.0077, operator: "iCharging", price: "公告 12 元/度；國道優惠約 9.8 元/度", plugs: 5 },
+  { name: "湖口服務區南站", road: "國道一號", direction: "南下", routeKm: 86, lat: 24.8619, lng: 121.0077, operator: "iCharging", price: "公告 12 元/度；國道優惠約 9.8 元/度", plugs: 5 },
+  { name: "泰安服務區北向", road: "國道一號", direction: "北上", routeKm: 158, lat: 24.3311, lng: 120.7169, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 10 },
+  { name: "泰安服務區南向", road: "國道一號", direction: "南下", routeKm: 158, lat: 24.3311, lng: 120.7169, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 10 },
+  { name: "西螺服務區北向", road: "國道一號", direction: "北上", routeKm: 230, lat: 23.7892, lng: 120.4764, operator: "iCharging / TAIL", price: "國道優惠約 9.2 元/度；TAIL 約 9.9 元/度", plugs: 8 },
+  { name: "西螺服務區南向", road: "國道一號", direction: "南下", routeKm: 230, lat: 23.7892, lng: 120.4764, operator: "iCharging", price: "國道優惠約 9.2 元/度", plugs: 6 },
+  { name: "新營服務區北向", road: "國道一號", direction: "北上", routeKm: 284, lat: 23.3036, lng: 120.3001, operator: "iCharging", price: "國道優惠約 9.2 元/度", plugs: 2 },
+  { name: "新營服務區南向", road: "國道一號", direction: "南下", routeKm: 284, lat: 23.3036, lng: 120.3001, operator: "iCharging", price: "國道優惠約 9.2 元/度", plugs: 2 },
+  { name: "仁德服務區北向", road: "國道一號", direction: "北上", routeKm: 326, lat: 22.9359, lng: 120.2501, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 4 },
+  { name: "仁德服務區南向", road: "國道一號", direction: "南下", routeKm: 326, lat: 22.9359, lng: 120.2501, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 6 },
+  { name: "關西服務區", road: "國道三號", direction: "雙向", routeKm: 76, lat: 24.7828, lng: 121.1757, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 6 },
+  { name: "清水服務區", road: "國道三號", direction: "雙向", routeKm: 172, lat: 24.2814, lng: 120.6017, operator: "iCharging", price: "公告 12 元/度；國道優惠約 9.8 元/度", plugs: 6 },
+  { name: "南投服務區", road: "國道三號", direction: "雙向", routeKm: 231, lat: 23.8627, lng: 120.6889, operator: "公共快充", price: "會員價格，充電前依平台顯示為準", plugs: 10 },
+  { name: "東草屯休息站", road: "國道六號", direction: "雙向", routeKm: 8, lat: 23.9821, lng: 120.7465, operator: "公共快充", price: "會員價格，充電前依平台顯示為準", plugs: 6 },
+  { name: "東山服務區", road: "國道三號", direction: "雙向", routeKm: 319, lat: 23.2948, lng: 120.4216, operator: "iCharging", price: "公告 12 元/度；國道優惠約 9.8 元/度", plugs: 6 },
+  { name: "關廟服務區北站", road: "國道三號", direction: "北上", routeKm: 363, lat: 22.9552, lng: 120.3397, operator: "公共快充", price: "會員價格，充電前依平台顯示為準", plugs: 6 },
+  { name: "關廟服務區南站", road: "國道三號", direction: "南下", routeKm: 363, lat: 22.9552, lng: 120.3397, operator: "公共快充", price: "會員價格，充電前依平台顯示為準", plugs: 6 },
+  { name: "石碇服務區", road: "國道五號", direction: "雙向", routeKm: 4, lat: 24.9918, lng: 121.6588, operator: "iCharging", price: "國道優惠約 9.2 元/度", plugs: 4 },
+  { name: "蘇澳服務區", road: "國道五號", direction: "雙向", routeKm: 54, lat: 24.6175, lng: 121.8252, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 4 },
+];
+
 const rows = document.getElementById("stationRows");
 const bars = document.getElementById("bars");
 const locateBtn = document.getElementById("locateBtn");
@@ -98,6 +121,7 @@ const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
 const plannerResult = document.getElementById("plannerResult");
+const networkList = document.getElementById("networkList");
 const maxTotal = Math.max(...stations.map((station) => station.ccs1 + station.ccs2));
 const briaBatteryKwh = 57.7;
 const briaEfficiencyKmPerKwh = 5.3;
@@ -132,6 +156,16 @@ bars.innerHTML = stations
       </div>
     `;
   })
+  .join("");
+
+networkList.innerHTML = nonTeslaChargers
+  .map((charger) => `
+    <article>
+      <strong>${charger.name}</strong>
+      <span>${charger.road}｜${charger.direction}｜${charger.operator}</span>
+      <small>${charger.plugs} 槍｜${charger.price}</small>
+    </article>
+  `)
   .join("");
 
 function distanceKm(aLat, aLng, bLat, bLng) {
@@ -226,24 +260,61 @@ function estimateSocAfterDistance(currentSoc, distanceKmValue) {
   return ((usableKwh - usedKwh) / briaBatteryKwh) * 100;
 }
 
-function suggestChargingStation(tripKm, currentSoc, reserveSoc) {
-  const maxReachBeforeReserve =
-    ((currentSoc - reserveSoc) / 100) * briaBatteryKwh * briaEfficiencyKmPerKwh;
-  const targetKm = Math.max(0, Math.min(tripKm, maxReachBeforeReserve * 0.75));
-  const ranked = stations
-    .map((station) => {
-      const stationTotal = station.ccs1 + station.ccs2;
-      const relativePosition = (stations.indexOf(station) + 1) / (stations.length + 1);
-      const estimatedAlongRouteKm = relativePosition * tripKm;
-      return {
-        ...station,
-        stationTotal,
-        estimatedAlongRouteKm,
-        score: Math.abs(estimatedAlongRouteKm - targetKm) - stationTotal * 2,
-      };
-    })
-    .sort((a, b) => a.score - b.score);
-  return ranked[0];
+function routeChargers(direction, tripKm) {
+  const candidates = nonTeslaChargers
+    .filter((charger) => charger.road === "國道一號")
+    .filter((charger) => charger.direction === "雙向" || (direction === "south" ? charger.direction !== "北上" : charger.direction !== "南下"));
+  const ordered = direction === "south"
+    ? candidates.sort((a, b) => a.routeKm - b.routeKm)
+    : candidates.sort((a, b) => b.routeKm - a.routeKm);
+  const min = Math.min(...ordered.map((charger) => charger.routeKm));
+  const max = Math.max(...ordered.map((charger) => charger.routeKm));
+  return ordered
+    .map((charger) => ({
+      ...charger,
+      estimatedAlongRouteKm: direction === "south"
+        ? ((charger.routeKm - min) / (max - min)) * tripKm
+        : ((max - charger.routeKm) / (max - min)) * tripKm,
+    }))
+    .filter((charger) => charger.estimatedAlongRouteKm > 0 && charger.estimatedAlongRouteKm < tripKm);
+}
+
+function buildChargingPlan(tripKm, currentSoc, reserveSoc, direction) {
+  const fullRange = briaBatteryKwh * briaEfficiencyKmPerKwh;
+  const preferredBufferKm = (reserveSoc / 100) * fullRange;
+  const chargers = routeChargers(direction, tripKm);
+  const stops = [];
+  let currentPosition = 0;
+  let soc = currentSoc;
+
+  for (let guard = 0; guard < 4; guard += 1) {
+    const remainingKm = tripKm - currentPosition;
+    const arrivalSoc = estimateSocAfterDistance(soc, remainingKm);
+    if (arrivalSoc >= reserveSoc) break;
+
+    const reachableKm = ((soc - reserveSoc) / 100) * fullRange;
+    const reachableChargers = chargers.filter(
+      (charger) =>
+        charger.estimatedAlongRouteKm > currentPosition + 5 &&
+        charger.estimatedAlongRouteKm <= currentPosition + Math.max(20, reachableKm)
+    );
+    const nextStop = reachableChargers
+      .sort((a, b) => b.estimatedAlongRouteKm - a.estimatedAlongRouteKm || b.plugs - a.plugs)[0];
+
+    if (!nextStop) {
+      return { stops, impossible: true, currentPosition, soc };
+    }
+
+    const distanceToStop = nextStop.estimatedAlongRouteKm - currentPosition;
+    const arriveStopSoc = estimateSocAfterDistance(soc, distanceToStop);
+    const kmAfterStop = tripKm - nextStop.estimatedAlongRouteKm;
+    const neededSocAfterStop = Math.min(90, Math.max(65, ((kmAfterStop + preferredBufferKm) / fullRange) * 100));
+    stops.push({ ...nextStop, arriveStopSoc, chargeToSoc: neededSocAfterStop });
+    currentPosition = nextStop.estimatedAlongRouteKm;
+    soc = neededSocAfterStop;
+  }
+
+  return { stops, impossible: false, finalSoc: estimateSocAfterDistance(soc, tripKm - currentPosition) };
 }
 
 tripForm.addEventListener("submit", (event) => {
@@ -251,6 +322,7 @@ tripForm.addEventListener("submit", (event) => {
   const tripKm = Number(document.getElementById("tripKm").value);
   const currentSoc = Number(document.getElementById("currentSoc").value);
   const reserveSoc = Number(document.getElementById("reserveSoc").value);
+  const direction = document.getElementById("routeDirection").value;
   const startPlace = document.getElementById("startPlace").value.trim() || "出發地";
   const endPlace = document.getElementById("endPlace").value.trim() || "目的地";
 
@@ -264,20 +336,19 @@ tripForm.addEventListener("submit", (event) => {
   const reserveKm = (reserveSoc / 100) * fullRange;
   const arrivalSoc = estimateSocAfterDistance(currentSoc, tripKm);
   const needCharge = arrivalSoc < reserveSoc;
-  const station = suggestChargingStation(tripKm, currentSoc, reserveSoc);
-  const stationArrivalSoc = estimateSocAfterDistance(currentSoc, station.estimatedAlongRouteKm);
-  const suggestedChargeToSoc = Math.min(90, Math.max(65, reserveSoc + ((tripKm - station.estimatedAlongRouteKm) / fullRange) * 100 + 15));
-  const finalSocAfterCharge = estimateSocAfterDistance(
-    suggestedChargeToSoc,
-    tripKm - station.estimatedAlongRouteKm
-  );
+  const plan = buildChargingPlan(tripKm, currentSoc, reserveSoc, direction);
+  const stopText = plan.stops.length
+    ? plan.stops
+        .map((stop, index) => `${index + 1}. ${stop.name}：約在 ${stop.estimatedAlongRouteKm.toFixed(0)} 公里處，抵達約剩 ${stop.arriveStopSoc.toFixed(1)}%，建議充到 ${stop.chargeToSoc.toFixed(0)}%。${stop.price}`)
+        .join("<br>")
+    : "不需要安排中途充電。";
 
   plannerResult.innerHTML = `
     <strong>${startPlace} → ${endPlace}</strong>
     <span>Bria 滿電估算續航約 ${fullRange.toFixed(0)} 公里；目前 ${currentSoc}% 約可跑 ${currentRange.toFixed(0)} 公里。</span>
     <span>不充電直達預估剩 ${arrivalSoc.toFixed(1)}%。${needCharge ? "建議提早規劃充電。" : "若路況正常，可達目的地並保留設定電量。"}</span>
-    <span>建議補電站：${station.name}，粗估在行程約 ${station.estimatedAlongRouteKm.toFixed(0)} 公里處，抵達該站約剩 ${stationArrivalSoc.toFixed(1)}%。</span>
-    <span>建議至少充到 ${suggestedChargeToSoc.toFixed(0)}%，抵達目的地約剩 ${finalSocAfterCharge.toFixed(1)}%。</span>
+    <span>${plan.impossible ? "目前電量不足以安全抵達下一個內建非特斯拉候選站，建議出發前先補電。" : `預估抵達目的地約剩 ${(plan.finalSoc ?? arrivalSoc).toFixed(1)}%。`}</span>
+    <span><b>建議充電安排：</b><br>${stopText}</span>
     <small>提醒：這是依平均電耗估算，實際會受車速、冷氣、載重、天氣、上坡與塞車影響；長途建議保留 10% 到 20% 緩衝。</small>
   `;
 });

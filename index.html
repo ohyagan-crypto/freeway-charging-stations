@@ -23,16 +23,71 @@
         <span>國道快充整理</span>
       </a>
       <nav aria-label="頁面導覽">
+        <a href="#planner">行車規劃</a>
         <a href="#overview">總覽</a>
         <a href="#n1">國道一號</a>
         <a href="#nearest">最近站點</a>
-        <a href="#planner">行程規劃</a>
+        <a href="#network">非特斯拉</a>
         <a href="#n2">國道二號</a>
         <a href="#sources">資料來源</a>
       </nav>
     </header>
 
     <main id="top">
+      <section class="section planner planner-top" id="planner">
+        <div class="section-head">
+          <p class="label">Bria Trip Planner</p>
+          <h2>先輸入你的行車資訊</h2>
+          <p>你的車款預設為鴻華 Bria，電池 57.7 度、平均電耗 5.3 km/度。輸入目前電量、行程距離與方向後，網站會先排除 Tesla 站，從可用的非特斯拉充電站中安排最近或必要的補電點。</p>
+        </div>
+
+        <div class="planner-card">
+          <form class="planner-form" id="tripForm">
+            <label>
+              出發地
+              <input id="startPlace" type="text" placeholder="例如：台北" />
+            </label>
+            <label>
+              目的地
+              <input id="endPlace" type="text" placeholder="例如：高雄" />
+            </label>
+            <label>
+              行駛方向
+              <select id="routeDirection">
+                <option value="south">北往南</option>
+                <option value="north">南往北</option>
+              </select>
+            </label>
+            <label>
+              全程預估距離（公里）
+              <input id="tripKm" type="number" min="1" step="1" placeholder="例如：350" required />
+            </label>
+            <label>
+              目前電量（%）
+              <input id="currentSoc" type="number" min="1" max="100" step="1" value="80" required />
+            </label>
+            <label>
+              希望抵達保留電量（%）
+              <input id="reserveSoc" type="number" min="0" max="50" step="1" value="15" required />
+            </label>
+            <label>
+              車款參數
+              <input value="鴻華 Bria｜57.7 度｜5.3 km/度" disabled />
+            </label>
+            <label>
+              充電站篩選
+              <input value="排除 Tesla，只排非特斯拉站點" disabled />
+            </label>
+            <button class="btn primary" type="submit">安排充電路線</button>
+          </form>
+
+          <div class="planner-result" id="plannerResult">
+            <strong>輸入行程資料後，我會幫你規劃。</strong>
+            <span>結果會包含是否需要提早充電、建議去哪一站、到站與抵達目的地預估剩餘電量。</span>
+          </div>
+        </div>
+      </section>
+
       <section class="hero">
         <div class="hero-copy">
           <p class="label">CCS1 / CCS2 即時查詢輔助</p>
@@ -106,49 +161,6 @@
         </div>
       </section>
 
-      <section class="section planner" id="planner">
-        <div class="section-head">
-          <p class="label">Bria Trip Planner</p>
-          <h2>鴻華 Bria 行程充電規劃</h2>
-          <p>預設以電池 57.7 度、平均電耗 5.3 km/度估算。輸入目前電量與目的地距離後，會推估是否需要提早充電、建議哪一站補電，以及抵達目的地約剩多少電。</p>
-        </div>
-
-        <div class="planner-card">
-          <form class="planner-form" id="tripForm">
-            <label>
-              出發地
-              <input id="startPlace" type="text" placeholder="例如：台北" />
-            </label>
-            <label>
-              目的地
-              <input id="endPlace" type="text" placeholder="例如：台南" />
-            </label>
-            <label>
-              全程預估距離（公里）
-              <input id="tripKm" type="number" min="1" step="1" placeholder="例如：310" required />
-            </label>
-            <label>
-              目前電量（%）
-              <input id="currentSoc" type="number" min="1" max="100" step="1" value="80" required />
-            </label>
-            <label>
-              希望抵達保留電量（%）
-              <input id="reserveSoc" type="number" min="0" max="50" step="1" value="15" required />
-            </label>
-            <label>
-              車款參數
-              <input value="鴻華 Bria｜57.7 度｜5.3 km/度" disabled />
-            </label>
-            <button class="btn primary" type="submit">估算充電規劃</button>
-          </form>
-
-          <div class="planner-result" id="plannerResult">
-            <strong>輸入行程資料後，我會幫你估算。</strong>
-            <span>若不知道精準里程，可以先用 Google Maps 估一個全程公里數。</span>
-          </div>
-        </div>
-      </section>
-
       <section class="section" id="n1">
         <div class="section-head">
           <p class="label">National Freeway 1</p>
@@ -180,6 +192,15 @@
           <p>長條越長代表該站 CCS1、CCS2 合計槍數越多。</p>
         </div>
         <div class="bars" id="bars"></div>
+      </section>
+
+      <section class="section network" id="network">
+        <div class="section-head">
+          <p class="label">Non-Tesla Network</p>
+          <h2>非特斯拉充電站資料池</h2>
+          <p>目前公開頁先內建可用的非特斯拉候選站，路線規劃會優先從這些站點安排；全台完整即時站點需串 TDX 充電站 API，正式版建議用後端代理保護授權金鑰。</p>
+        </div>
+        <div class="network-list" id="networkList"></div>
       </section>
 
       <section class="section n2" id="n2">

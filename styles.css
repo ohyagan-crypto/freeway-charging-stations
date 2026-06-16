@@ -324,6 +324,11 @@ button.btn {
   padding-top: 0;
 }
 
+.planner-top {
+  padding-top: clamp(36px, 6vw, 74px);
+  padding-bottom: 48px;
+}
+
 .planner-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 420px;
@@ -354,7 +359,8 @@ button.btn {
   font-weight: 900;
 }
 
-.planner-form input {
+.planner-form input,
+.planner-form select {
   min-height: 46px;
   width: 100%;
   padding: 0 14px;
@@ -392,6 +398,36 @@ button.btn {
 .planner-result small {
   color: var(--muted);
   line-height: 1.7;
+}
+
+.planner-result b {
+  color: var(--ink);
+}
+
+.network-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.network-list article {
+  display: grid;
+  gap: 7px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(24, 42, 34, 0.05);
+}
+
+.network-list strong {
+  font-size: 18px;
+}
+
+.network-list span,
+.network-list small {
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .section-head {
@@ -553,7 +589,8 @@ footer {
   .hero,
   .overview,
   .nearest-card,
-  .planner-card {
+  .planner-card,
+  .network-list {
     grid-template-columns: 1fr;
   }
 }
