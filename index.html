@@ -20,29 +20,38 @@
     <header class="topbar">
       <a class="brand" href="#top" aria-label="回到頁首">
         <span class="brand-icon">⚡</span>
-        <span>國道快充整理</span>
+        <span>Bria 補電助手</span>
       </a>
       <nav aria-label="頁面導覽">
-        <a href="#planner">行車規劃</a>
-        <a href="#overview">總覽</a>
-        <a href="#n1">國道一號</a>
-        <a href="#nearest">最近站點</a>
+        <a href="#planner">規劃</a>
+        <a href="#live">即時</a>
         <a href="#network">非特斯拉</a>
-        <a href="#n2">國道二號</a>
-        <a href="#sources">資料來源</a>
+        <a href="#n1">槍數</a>
       </nav>
     </header>
 
     <main id="top">
-      <section class="section planner planner-top" id="planner">
-        <div class="section-head">
-          <p class="label">Bria Trip Planner</p>
-          <h2>先輸入你的行車資訊</h2>
-          <p>你的車款預設為鴻華 Bria，電池 57.7 度、平均電耗 5.3 km/度。輸入目前電量、行程距離與方向後，網站會先排除 Tesla 站，從可用的非特斯拉充電站中安排最近或必要的補電點。</p>
+      <section class="app-shell" id="planner">
+        <div class="planner-hero">
+          <div class="planner-copy">
+            <p class="label">Bria Charging Assistant</p>
+            <h1>出發前先算好，要不要充、去哪裡充。</h1>
+            <p class="lead">以你的鴻華 Bria 57.7 度電池、平均 5.3 km/度估算，排除 Tesla，只安排非特斯拉充電站。</p>
+          </div>
+
+          <div class="vehicle-card">
+            <span>你的車款</span>
+            <strong>鴻華 Bria</strong>
+            <div class="vehicle-metrics">
+              <b>57.7 度</b>
+              <b>5.3 km/度</b>
+              <b>約 306 km</b>
+            </div>
+          </div>
         </div>
 
-        <div class="planner-card">
-          <form class="planner-form" id="tripForm">
+        <div class="dashboard-grid">
+          <form class="planner-form primary-panel" id="tripForm">
             <label>
               出發地
               <input id="startPlace" type="text" placeholder="例如：台北" />
@@ -82,67 +91,28 @@
             <button class="btn secondary" id="calcDistanceBtn" type="button">自動估算距離</button>
           </form>
 
-          <div class="planner-result" id="plannerResult">
+          <div class="planner-result result-panel" id="plannerResult">
             <strong>輸入行程資料後，我會幫你規劃。</strong>
             <span>出發地可填城市、地址或景點；若留空，會用手機 GPS 當出發點。距離會先用地圖座標估算，必要時仍可手動修正。</span>
           </div>
         </div>
       </section>
 
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="label">CCS1 / CCS2 即時查詢輔助</p>
-          <h1>國道一號、國道二號服務區快充站一覽</h1>
-          <p class="lead">
-            依照公開資料整理國道服務區快充／超充站資訊，標示每個休息站、服務區的 CCS1 與 CCS2 槍數、目前可查到的充電價格，並加入 GPS 最近站點與即時使用狀態輔助。
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#n1">查看槍數表</a>
-            <a class="btn secondary" href="#nearest">找最近站點</a>
-          </div>
-        </div>
-
-        <aside class="summary-card" aria-label="資料摘要">
-          <div class="summary-head">
-            <span>目前整理</span>
-            <strong>國道 1、2 號</strong>
-          </div>
-          <div class="metric-grid">
-            <div>
-              <b>10</b>
-              <span>國道一號站點</span>
-            </div>
-            <div>
-              <b>31</b>
-              <span>CCS1 合計槍數</span>
-            </div>
-            <div>
-              <b>31</b>
-              <span>CCS2 合計槍數</span>
-            </div>
-            <div>
-              <b id="liveUpdated">讀取中</b>
-              <span>即時狀態更新</span>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="overview" id="overview">
+      <section class="quick-strip" id="live">
         <article>
-          <span>重點 01</span>
-          <h2>國道一號有多個服務區快充站</h2>
-          <p>目前整理到中壢、湖口、泰安、西螺、新營、仁德等服務區，其中部分分為北上與南下站點。</p>
+          <span>即時更新</span>
+          <strong id="liveUpdated">讀取中</strong>
+          <small>嘗試讀取公開即時狀態</small>
         </article>
         <article>
-          <span>重點 02</span>
-          <h2>國道二號未列服務區快充站</h2>
-          <p>高公局公布的國道快充路網列有國道 1、3、5、6 號，沒有列到國道 2 號服務區快充站。</p>
+          <span>非特斯拉候選</span>
+          <strong>20 站</strong>
+          <small>國道 1、3、5、6 內建資料池</small>
         </article>
         <article>
-          <span>重點 03</span>
-          <h2>可查詢價格、使用狀態與最近站</h2>
-          <p>頁面會嘗試讀取公開即時頁的充電槍狀態，GPS 功能則在你同意定位後計算距離最近的服務區。</p>
+          <span>Bria 滿電估算</span>
+          <strong>約 306 km</strong>
+          <small>57.7 度 × 5.3 km/度</small>
         </article>
       </section>
 
