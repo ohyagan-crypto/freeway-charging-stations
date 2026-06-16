@@ -114,25 +114,11 @@ const nonTeslaChargers = [
   { name: "蘇澳服務區", road: "國道五號", direction: "雙向", routeKm: 54, lat: 24.6175, lng: 121.8252, operator: "iCharging", price: "公告 12 元/度；國道優惠約 10 元/度", plugs: 4 },
 ];
 
-
-
-const nonTeslaSlowChargers = [
-  { name: "???????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "??????????", price: "??????????", operator: "????" },
-  { name: "?????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "??????????", price: "??????????", operator: "????" },
-  { name: "??????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "??????????", price: "??????????", operator: "????" },
-  { name: "???????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "??????", price: "??????????", operator: "????" },
-  { name: "??????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "???????", price: "??????????", operator: "????" },
-  { name: "????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "???????? 2 ????", price: "??????????", operator: "????" },
-  { name: "??????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "????????", price: "??????????", operator: "????" },
-  { name: "???????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "?????????", price: "??????????", operator: "????" },
-  { name: "???????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "??????????", price: "??????????", operator: "????" },
-  { name: "????????", city: "??", connector: "J1772 / Type1", power: "7kW", usage: "???????????", price: "??????????", operator: "????" },
-];
+const nonTeslaSlowChargers = [];
 
 const rows = document.getElementById("stationRows");
 const bars = document.getElementById("bars");
 const locateBtn = document.getElementById("locateBtn");
-const calcDistanceBtn = document.getElementById("calcDistanceBtn");
 const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
@@ -179,8 +165,8 @@ networkList.innerHTML = nonTeslaChargers
   .map((charger) => `
     <article>
       <strong>${charger.name}</strong>
-      <span>${charger.road}?${charger.direction}?${charger.operator}</span>
-      <small>???${charger.plugs} ??${charger.price}</small>
+      <span>${charger.road}｜${charger.direction}｜${charger.operator}</span>
+      <small>槍數 ${charger.plugs} 支｜${charger.price}</small>
     </article>
   `)
   .join("");
@@ -189,11 +175,17 @@ slowList.innerHTML = nonTeslaSlowChargers
   .map((charger) => `
     <article>
       <strong>${charger.name}</strong>
-      <span>${charger.city}?${charger.connector}?${charger.power}</span>
-      <small>???${charger.usage}?${charger.price}</small>
+      <span>${charger.address}｜${charger.connector}｜${charger.power}</span>
+      <small>${charger.operator}｜${charger.usage}｜${charger.price}</small>
     </article>
   `)
-  .join("");
+  .join("") || `
+    <article>
+      <strong>慢充站資料待補</strong>
+      <span>目前沒有可確認地址的慢充清單。</span>
+      <small>確認來源後才會加入，避免用推估地址誤導。</small>
+    </article>
+  `;
 
 function distanceKm(aLat, aLng, bLat, bLng) {
   const radius = 6371;
@@ -223,43 +215,6 @@ function getCurrentPosition() {
   });
 }
 
-async function geocodeTaiwanPlace(place) {
-  const query = encodeURIComponent(`${place} 台灣`);
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=tw&q=${query}`,
-    { headers: { Accept: "application/json" } }
-  );
-  if (!response.ok) throw new Error("查不到地址");
-  const result = await response.json();
-  if (!result.length) throw new Error("查不到地址");
-  return { lat: Number(result[0].lat), lng: Number(result[0].lon), label: result[0].display_name };
-}
-
-async function estimateTripDistance() {
-  const startPlace = document.getElementById("startPlace").value.trim();
-  const endPlace = document.getElementById("endPlace").value.trim();
-  const tripKmInput = document.getElementById("tripKm");
-
-  if (!endPlace) {
-    throw new Error("請先輸入目的地");
-  }
-
-  const start = startPlace
-    ? await geocodeTaiwanPlace(startPlace)
-    : await getCurrentPosition().then(({ coords }) => ({
-        lat: coords.latitude,
-        lng: coords.longitude,
-        label: "目前 GPS 位置",
-      }));
-  const end = await geocodeTaiwanPlace(endPlace);
-
-  // Straight-line distance is too optimistic for driving. Taiwan highway trips are
-  // commonly longer than the air line, so use a conservative multiplier.
-  const estimatedKm = Math.ceil(distanceKm(start.lat, start.lng, end.lat, end.lng) * 1.25);
-  tripKmInput.value = estimatedKm;
-  return { estimatedKm, start, end };
-}
-
 locateBtn.addEventListener("click", () => {
   if (!navigator.geolocation) {
     nearestResult.textContent = "這個瀏覽器不支援 GPS 定位";
@@ -278,7 +233,7 @@ locateBtn.addEventListener("click", () => {
       const nearest = ranked[0];
       nearestResult.innerHTML = `
         <strong>${nearest.name}</strong>
-        <span>距離約 ${nearest.distance.toFixed(1)} 公里</span>
+        <span>最近國道快充｜距離約 ${nearest.distance.toFixed(1)} 公里</span>
         <small>${nearest.price}</small>
       `;
     },
@@ -287,28 +242,6 @@ locateBtn.addEventListener("click", () => {
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
   );
-});
-
-calcDistanceBtn.addEventListener("click", async () => {
-  plannerResult.innerHTML = `
-    <strong>正在估算距離</strong>
-    <span>我會用出發地與目的地座標估算行車距離；若出發地空白，請允許瀏覽器取得目前位置。</span>
-  `;
-
-  try {
-    const { estimatedKm, start, end } = await estimateTripDistance();
-    plannerResult.innerHTML = `
-      <strong>距離已自動填入：約 ${estimatedKm} 公里</strong>
-      <span>出發：${start.label}</span>
-      <span>目的地：${end.label}</span>
-      <small>這是以座標距離乘上道路係數的估算值，長途規劃前可依導航實際公里數微調。</small>
-    `;
-  } catch (error) {
-    plannerResult.innerHTML = `
-      <strong>距離估算失敗</strong>
-      <span>${error.message || "請確認出發地、目的地或定位權限。"}</span>
-    `;
-  }
 });
 
 function extractLiveStatus(markdown, station) {
@@ -423,18 +356,10 @@ tripForm.addEventListener("submit", async (event) => {
   const tripKmInput = document.getElementById("tripKm");
   if (!tripKmInput.value) {
     plannerResult.innerHTML = `
-      <strong>正在先幫你估算距離</strong>
-      <span>請稍等，距離完成後會接著安排充電路線。</span>
+      <strong>還不能安排路線</strong>
+      <span>請先填入導航顯示的全程公里數；地址不做自動推估。</span>
     `;
-    try {
-      await estimateTripDistance();
-    } catch (error) {
-      plannerResult.innerHTML = `
-        <strong>還不能安排路線</strong>
-        <span>${error.message || "請先輸入目的地，或手動填入全程公里數。"}</span>
-      `;
-      return;
-    }
+    return;
   }
 
   const tripKm = Number(tripKmInput.value);
@@ -457,9 +382,9 @@ tripForm.addEventListener("submit", async (event) => {
   const plan = buildChargingPlan(tripKm, currentSoc, reserveSoc, direction);
   const stopText = plan.stops.length
     ? plan.stops
-        .map((stop, index) => `${index + 1}. ${stop.name}??? ${stop.estimatedAlongRouteKm.toFixed(0)} ???????? ${stop.arriveStopSoc.toFixed(1)}%????? ${stop.chargeToSoc.toFixed(0)}%?${stop.price}`)
+        .map((stop, index) => `${index + 1}. ${stop.name}｜約第 ${stop.estimatedAlongRouteKm.toFixed(0)} 公里｜抵達約剩 ${stop.arriveStopSoc.toFixed(1)}%｜建議充到 ${stop.chargeToSoc.toFixed(0)}%｜${stop.price}`)
         .join("<br>")
-    : "????????????????? 2 ???????????????????";
+    : "依目前設定可不安排中途補電；仍建議出發前確認目的地附近至少 1 到 2 個備用慢充或快充站。";
 
   plannerResult.innerHTML = `
     <strong>${startPlace} → ${endPlace}</strong>

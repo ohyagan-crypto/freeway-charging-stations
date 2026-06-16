@@ -25,7 +25,9 @@
       <nav aria-label="頁面導覽">
         <a href="#planner">規劃</a>
         <a href="#live">即時</a>
+        <a href="#nearest">最近站</a>
         <a href="#network">非特斯拉</a>
+        <a href="#slow">慢充</a>
         <a href="#n1">槍數</a>
       </nav>
     </header>
@@ -69,7 +71,7 @@
             </label>
             <label>
               全程預估距離（公里）
-              <input id="tripKm" type="number" min="1" step="1" placeholder="會自動估算，可手動微調" />
+              <input id="tripKm" type="number" min="1" step="1" placeholder="請填導航顯示的實際公里數" required />
             </label>
             <label>
               目前電量（%）
@@ -88,12 +90,11 @@
               <input value="排除 Tesla，只排非特斯拉站點" disabled />
             </label>
             <button class="btn primary" type="submit">安排充電路線</button>
-            <button class="btn secondary" id="calcDistanceBtn" type="button">自動估算距離</button>
           </form>
 
           <div class="planner-result result-panel" id="plannerResult">
             <strong>輸入行程資料後，我會幫你規劃。</strong>
-            <span>出發地可填城市、地址或景點；若留空，會用手機 GPS 當出發點。距離會先用地圖座標估算，必要時仍可手動修正。</span>
+            <span>地址不做推估；請直接填導航顯示的全程公里數，系統只依你填入的公里數計算電量與補電安排。</span>
           </div>
         </div>
       </section>
@@ -120,13 +121,13 @@
         <div class="nearest-card">
           <div>
             <p class="label">GPS Nearest Station</p>
-            <h2>找離你最近的國道一號快充站</h2>
+            <h2>找離你最近的國道快充</h2>
             <p>
-              點下按鈕後，瀏覽器會詢問定位權限。定位只在你的裝置上用來計算距離，不會送到我們的伺服器保存。
+              點下按鈕後，瀏覽器會詢問定位權限。定位只在你的裝置上用來計算最近的國道快充，不會送到我們的伺服器保存。
             </p>
           </div>
           <div class="nearest-action">
-            <button class="btn primary" id="locateBtn" type="button">使用 GPS 找最近站</button>
+            <button class="btn primary" id="locateBtn" type="button">使用 GPS 找最近充電站</button>
             <div class="nearest-result" id="nearestResult">尚未定位</div>
           </div>
         </div>
@@ -177,8 +178,8 @@
       <section class="section network slow-network" id="slow">
         <div class="section-head">
           <p class="label">Non-Tesla Slow Charging</p>
-          <h2>????????</h2>
-          <p>???????????????????????????????????????????????????????????????</p>
+          <h2>非特斯拉慢充資料待補</h2>
+          <p>慢充站地址與座標不做推估；確認來源後才會列入站點清單。</p>
         </div>
         <div class="network-list slow-list" id="slowList"></div>
       </section>
