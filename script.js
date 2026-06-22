@@ -137,6 +137,8 @@ const briaEfficiencyKmPerKwh = 5.3;
 const briaKmPerPercent = 3;
 const offPeakStartMinute = 0;
 const offPeakEndMinute = 9 * 60;
+const offPeakStartText = "00:00";
+const offPeakEndText = "09:00";
 const selectedPlaces = {
   startPlace: null,
   endPlace: null,
@@ -578,6 +580,11 @@ function formatDuration(minutes) {
   return `${hours} 小時 ${mins} 分鐘`;
 }
 
+function formatPercent(value) {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded.toFixed(0)}%` : `${rounded.toFixed(1)}%`;
+}
+
 function isOffPeakMinute(totalMinutes) {
   const minuteOfDay = ((Math.floor(totalMinutes) % 1440) + 1440) % 1440;
   return minuteOfDay >= offPeakStartMinute && minuteOfDay < offPeakEndMinute;
@@ -650,11 +657,14 @@ function renderHomeChargeCalculator() {
   const continuous = addChargingMinutes(startMinute, chargeMinutes, false);
   const offPeakOnly = addChargingMinutes(startMinute, chargeMinutes, true);
   const selectedPlan = mode === "continuous" ? continuous : offPeakOnly;
-  const nightsNeeded = Math.ceil(selectedPlan.elapsedMinutes / 1440);
   const rangeAddedKm = percentNeeded * briaKmPerPercent;
   const dailyOffPeakMinutes = offPeakEndMinute - offPeakStartMinute;
   const offPeakFullWindowKwh = carPowerKw * (dailyOffPeakMinutes / 60);
+  const oneNightAddedPercent = Math.min(percentNeeded, (offPeakFullWindowKwh / briaBatteryKwh) * 100);
+  const oneNightFinishSoc = Math.min(targetSoc, currentSoc + oneNightAddedPercent);
   const remainingKwhAfterOneOffPeak = Math.max(0, batteryKwhNeeded - offPeakFullWindowKwh);
+  const nightsNeeded = Math.max(1, Math.ceil(batteryKwhNeeded / offPeakFullWindowKwh));
+  const offPeakEnoughTonight = remainingKwhAfterOneOffPeak <= 0;
   const selectedModeText = mode === "continuous" ? "連續充滿" : "只用離峰優先";
   const finishDayOffset = Math.floor(selectedPlan.finishMinute / 1440);
   const finishDayText =
@@ -666,15 +676,21 @@ function renderHomeChargeCalculator() {
   const advice =
     mode === "continuous"
       ? `若從 ${formatClock(startMinute)} 連續充，約 ${formatClock(selectedPlan.finishMinute)} 充到 ${targetSoc}%。其中尖峰充電約 ${formatDuration(selectedPlan.peakCharged)}。`
-      : remainingKwhAfterOneOffPeak > 0
-        ? `只跑 00:00-09:00 離峰，第一晚最多約可補 ${offPeakFullWindowKwh.toFixed(1)} 度，還差約 ${remainingKwhAfterOneOffPeak.toFixed(1)} 度，要拆成約 ${nightsNeeded} 晚。`
-        : `建議預約 ${formatClock(startMinute)} 開始，這次可完全落在 00:00-09:00 離峰內充到 ${targetSoc}%。`;
+      : offPeakEnoughTonight
+        ? `今晚離峰 ${offPeakStartText}-${offPeakEndText} 內可以充到 ${targetSoc}%。建議預約 ${formatClock(startMinute)} 開始，充完就可停。`
+        : `今晚離峰最多約補 ${offPeakFullWindowKwh.toFixed(1)} 度，會從 ${formatPercent(currentSoc)} 到約 ${formatPercent(oneNightFinishSoc)}；離 ${targetSoc}% 還差約 ${remainingKwhAfterOneOffPeak.toFixed(1)} 度，要拆成約 ${nightsNeeded} 晚。`;
+  const offPeakStatusClass = offPeakEnoughTonight ? "good" : "warn";
+  const offPeakStatusText = offPeakEnoughTonight ? "今晚離峰可充滿" : "今晚離峰不夠充滿";
 
   homeChargeResult.className = "home-charge-result";
   homeChargeResult.innerHTML = `
     <div class="charge-result-head">
       <span>${selectedModeText}｜${volts}V × ${amps}A × ${(efficiency * 100).toFixed(0)}% ≈ ${carPowerKw.toFixed(2)} kW 入車</span>
       <strong>${finishDayText} ${formatClock(selectedPlan.finishMinute)} 充到 ${targetSoc}%</strong>
+    </div>
+    <div class="offpeak-status ${offPeakStatusClass}">
+      <strong>${mode === "continuous" ? "離峰對照" : offPeakStatusText}</strong>
+      <span>${offPeakStartText}-${offPeakEndText} 一晚約可補 ${offPeakFullWindowKwh.toFixed(1)} 度，約 ${formatPercent((offPeakFullWindowKwh / briaBatteryKwh) * 100)}，約 ${((offPeakFullWindowKwh / briaBatteryKwh) * 100 * briaKmPerPercent).toFixed(0)} km。</span>
     </div>
     <div class="charge-metrics">
       <article>
@@ -709,6 +725,13 @@ function renderHomeChargeCalculator() {
     <p class="charge-footnote">這是依 57.7 度電池、1% 約 3 km、固定 00:00-09:00 離峰估算；實際時間會受車機限流、電壓波動、電池溫度與高電量末段降速影響。</p>
   `;
 }
+
+document.querySelectorAll("[data-home-soc]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.getElementById("homeSoc").value = button.dataset.homeSoc;
+    renderHomeChargeCalculator();
+  });
+});
 
 function routeChargers(direction, tripKm) {
   const candidates = nonTeslaChargers

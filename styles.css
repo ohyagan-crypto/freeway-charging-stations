@@ -355,6 +355,35 @@ h1 {
   padding-top: 34px;
 }
 
+.home-charge-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.home-charge-facts article {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(24, 42, 34, 0.05);
+}
+
+.home-charge-facts span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.home-charge-facts strong {
+  font-family: Inter, "Noto Sans TC", sans-serif;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
 .home-charge-panel {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1.05fr);
@@ -397,6 +426,29 @@ h1 {
   font: inherit;
   font-size: 16px;
   font-weight: 700;
+}
+
+.soc-shortcuts {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.soc-shortcuts button {
+  min-height: 42px;
+  color: var(--green);
+  background: #eef7ee;
+  border: 1px solid rgba(31, 122, 77, 0.22);
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.soc-shortcuts button:hover {
+  border-color: rgba(31, 122, 77, 0.48);
+  box-shadow: 0 8px 18px rgba(31, 122, 77, 0.1);
 }
 
 .mode-field {
@@ -476,6 +528,34 @@ h1 {
 .charge-result-head strong {
   font-size: clamp(26px, 3vw, 38px);
   line-height: 1.15;
+}
+
+.offpeak-status {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.offpeak-status.good {
+  color: #124427;
+  background: #eff9ef;
+  border: 1px solid rgba(31, 122, 77, 0.22);
+}
+
+.offpeak-status.warn {
+  color: #7a4b00;
+  background: #fff8e8;
+  border: 1px solid rgba(180, 124, 12, 0.22);
+}
+
+.offpeak-status strong {
+  font-size: 18px;
+}
+
+.offpeak-status span {
+  color: inherit;
+  line-height: 1.55;
 }
 
 .charge-metrics {
@@ -972,6 +1052,7 @@ footer {
   .nearest-card,
   .planner-card,
   .home-charge-panel,
+  .home-charge-facts,
   .quick-strip,
   .network-list {
     grid-template-columns: 1fr;
@@ -1005,7 +1086,8 @@ footer {
 
   .planner-form,
   .home-charge-form,
-  .charge-metrics {
+  .charge-metrics,
+  .soc-shortcuts {
     grid-template-columns: 1fr;
   }
 

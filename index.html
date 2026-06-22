@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>國道一號、二號快充站槍數整理</title>
+    <title>鴻華 Bria 充電助手｜國道快充與家充離峰計算</title>
     <meta
       name="description"
-      content="國道一號與國道二號服務區快充／超充站整理，包含 CCS1、CCS2 各服務區充電槍數。"
+      content="鴻華 Bria 57.7 度電池家充離峰計算，並整理國道一號與國道二號服務區快充／超充站資訊。"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -132,35 +132,61 @@
       <section class="section home-charge-section" id="home-charge" aria-labelledby="homeChargeTitle">
         <div class="section-head">
           <p class="label">Home Off-Peak Charging</p>
-          <h2 id="homeChargeTitle">回家充滿時間</h2>
-          <p>鴻華 Bria 57.7 度電池，家用充電樁上限 22A，1% 約 3 公里；離峰時間固定 00:00-09:00。</p>
+          <h2 id="homeChargeTitle">到家剩幾 %，算離峰充滿時間</h2>
+          <p>固定用你的鴻華 Bria 57.7 度電池、家用充電樁最高 22A、1% 約 3 公里估算；離峰充電時間固定 00:00-09:00。</p>
+        </div>
+
+        <div class="home-charge-facts" aria-label="你的家充固定設定">
+          <article>
+            <span>車款</span>
+            <strong>鴻華 Bria</strong>
+          </article>
+          <article>
+            <span>電池容量</span>
+            <strong>57.7 度</strong>
+          </article>
+          <article>
+            <span>家充上限</span>
+            <strong>22A</strong>
+          </article>
+          <article>
+            <span>離峰時段</span>
+            <strong>00:00-09:00</strong>
+          </article>
         </div>
 
         <div class="home-charge-panel">
           <form class="home-charge-form" id="homeChargeForm">
             <label>
-              到家剩餘電量（%）
-              <input id="homeSoc" type="number" min="0" max="100" step="1" value="30" required />
+              到家剩幾 %
+              <input id="homeSoc" type="number" min="0" max="100" step="1" value="30" inputmode="numeric" required />
             </label>
             <label>
-              想充到（%）
-              <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" required />
+              目標電量 %
+              <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" inputmode="numeric" required />
             </label>
+            <div class="soc-shortcuts" aria-label="常用到家電量">
+              <button type="button" data-home-soc="10">10%</button>
+              <button type="button" data-home-soc="20">20%</button>
+              <button type="button" data-home-soc="30">30%</button>
+              <button type="button" data-home-soc="40">40%</button>
+              <button type="button" data-home-soc="50">50%</button>
+            </div>
             <label>
-              插槍／預約開始時間
+              開始充電時間
               <input id="chargeStartTime" type="time" value="00:00" required />
             </label>
             <label>
-              家充電流（A）
-              <input id="homeChargeAmps" type="number" min="6" max="22" step="1" value="22" required />
+              家充電流 A
+              <input id="homeChargeAmps" type="number" min="6" max="22" step="1" value="22" inputmode="numeric" required />
             </label>
             <label>
-              充電電壓（V）
-              <input id="homeChargeVolts" type="number" min="100" max="250" step="1" value="220" required />
+              充電電壓 V
+              <input id="homeChargeVolts" type="number" min="100" max="250" step="1" value="220" inputmode="numeric" required />
             </label>
             <label>
-              入車效率（%）
-              <input id="chargeEfficiency" type="number" min="70" max="100" step="1" value="90" required />
+              入車效率 %
+              <input id="chargeEfficiency" type="number" min="70" max="100" step="1" value="90" inputmode="numeric" required />
             </label>
             <fieldset class="mode-field">
               <legend>計算模式</legend>
