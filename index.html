@@ -24,6 +24,7 @@
       </a>
       <nav aria-label="頁面導覽">
         <a href="#planner">規劃</a>
+        <a href="#home-charge">家充</a>
         <a href="#live">即時</a>
         <a href="#nearest">最近站</a>
         <a href="#network">非特斯拉</a>
@@ -128,6 +129,59 @@
         </div>
       </section>
 
+      <section class="section home-charge-section" id="home-charge" aria-labelledby="homeChargeTitle">
+        <div class="section-head">
+          <p class="label">Home Off-Peak Charging</p>
+          <h2 id="homeChargeTitle">回家充滿時間</h2>
+          <p>鴻華 Bria 57.7 度電池，家用充電樁上限 22A，1% 約 3 公里；離峰時間固定 00:00-09:00。</p>
+        </div>
+
+        <div class="home-charge-panel">
+          <form class="home-charge-form" id="homeChargeForm">
+            <label>
+              到家剩餘電量（%）
+              <input id="homeSoc" type="number" min="0" max="100" step="1" value="30" required />
+            </label>
+            <label>
+              想充到（%）
+              <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" required />
+            </label>
+            <label>
+              插槍／預約開始時間
+              <input id="chargeStartTime" type="time" value="00:00" required />
+            </label>
+            <label>
+              家充電流（A）
+              <input id="homeChargeAmps" type="number" min="6" max="22" step="1" value="22" required />
+            </label>
+            <label>
+              充電電壓（V）
+              <input id="homeChargeVolts" type="number" min="100" max="250" step="1" value="220" required />
+            </label>
+            <label>
+              入車效率（%）
+              <input id="chargeEfficiency" type="number" min="70" max="100" step="1" value="90" required />
+            </label>
+            <fieldset class="mode-field">
+              <legend>計算模式</legend>
+              <div class="mode-toggle" role="radiogroup" aria-label="計算模式">
+                <label>
+                  <input type="radio" name="chargeMode" value="offpeak" checked />
+                  <span>離峰優先</span>
+                </label>
+                <label>
+                  <input type="radio" name="chargeMode" value="continuous" />
+                  <span>連續充滿</span>
+                </label>
+              </div>
+            </fieldset>
+            <button class="btn primary home-charge-submit" type="submit">計算充滿時間</button>
+          </form>
+
+          <div class="home-charge-result" id="homeChargeResult" aria-live="polite"></div>
+        </div>
+      </section>
+
       <section class="quick-strip" id="live">
         <article>
           <span>即時更新</span>
@@ -143,6 +197,11 @@
           <span>Bria 滿電估算</span>
           <strong>約 306 km</strong>
           <small>57.7 度 × 5.3 km/度</small>
+        </article>
+        <article>
+          <span>家充離峰</span>
+          <strong>22A</strong>
+          <small>00:00-09:00 優先充</small>
         </article>
       </section>
 

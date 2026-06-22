@@ -123,6 +123,8 @@ const nearestResult = document.getElementById("nearestResult");
 const liveUpdated = document.getElementById("liveUpdated");
 const tripForm = document.getElementById("tripForm");
 const plannerResult = document.getElementById("plannerResult");
+const homeChargeForm = document.getElementById("homeChargeForm");
+const homeChargeResult = document.getElementById("homeChargeResult");
 const estimateDistanceBtn = document.getElementById("estimateDistanceBtn");
 const refreshMapPreviewBtn = document.getElementById("refreshMapPreviewBtn");
 const mapPreview = document.getElementById("mapPreview");
@@ -132,6 +134,9 @@ const slowList = document.getElementById("slowList");
 const maxTotal = Math.max(...stations.map((station) => station.ccs1 + station.ccs2));
 const briaBatteryKwh = 57.7;
 const briaEfficiencyKmPerKwh = 5.3;
+const briaKmPerPercent = 3;
+const offPeakStartMinute = 0;
+const offPeakEndMinute = 9 * 60;
 const selectedPlaces = {
   startPlace: null,
   endPlace: null,
@@ -551,6 +556,160 @@ function estimateSocAfterDistance(currentSoc, distanceKmValue) {
   return ((usableKwh - usedKwh) / briaBatteryKwh) * 100;
 }
 
+function parseTimeToMinute(value) {
+  const [hours, minutes] = String(value || "00:00").split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return 0;
+  return Math.min(1439, Math.max(0, hours * 60 + minutes));
+}
+
+function formatClock(totalMinutes) {
+  const normalized = ((Math.round(totalMinutes) % 1440) + 1440) % 1440;
+  const hours = Math.floor(normalized / 60);
+  const minutes = normalized % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function formatDuration(minutes) {
+  const rounded = Math.ceil(minutes);
+  const hours = Math.floor(rounded / 60);
+  const mins = rounded % 60;
+  if (!hours) return `${mins} 分鐘`;
+  if (!mins) return `${hours} 小時`;
+  return `${hours} 小時 ${mins} 分鐘`;
+}
+
+function isOffPeakMinute(totalMinutes) {
+  const minuteOfDay = ((Math.floor(totalMinutes) % 1440) + 1440) % 1440;
+  return minuteOfDay >= offPeakStartMinute && minuteOfDay < offPeakEndMinute;
+}
+
+function addChargingMinutes(startMinute, requiredMinutes, offPeakOnly) {
+  let clock = startMinute;
+  let charged = 0;
+  let offPeakCharged = 0;
+  let peakCharged = 0;
+  let guard = 0;
+
+  while (charged < requiredMinutes && guard < 60 * 24 * 45) {
+    const offPeak = isOffPeakMinute(clock);
+    if (!offPeakOnly || offPeak) {
+      charged += 1;
+      if (offPeak) {
+        offPeakCharged += 1;
+      } else {
+        peakCharged += 1;
+      }
+    }
+    clock += 1;
+    guard += 1;
+  }
+
+  return {
+    finishMinute: clock,
+    elapsedMinutes: clock - startMinute,
+    offPeakCharged,
+    peakCharged,
+  };
+}
+
+function renderHomeChargeCalculator() {
+  const currentSoc = Number(document.getElementById("homeSoc").value);
+  const targetSoc = Number(document.getElementById("targetSoc").value);
+  const amps = Number(document.getElementById("homeChargeAmps").value);
+  const volts = Number(document.getElementById("homeChargeVolts").value);
+  const efficiency = Number(document.getElementById("chargeEfficiency").value) / 100;
+  const startMinute = parseTimeToMinute(document.getElementById("chargeStartTime").value);
+  const mode = document.querySelector('input[name="chargeMode"]:checked')?.value || "offpeak";
+
+  if (targetSoc <= currentSoc) {
+    homeChargeResult.className = "home-charge-result";
+    homeChargeResult.innerHTML = `<div class="charge-error">想充到的電量要高於到家剩餘電量。</div>`;
+    return;
+  }
+
+  if (
+    currentSoc < 0 ||
+    currentSoc > 100 ||
+    targetSoc < 1 ||
+    targetSoc > 100 ||
+    amps <= 0 ||
+    amps > 22 ||
+    volts <= 0 ||
+    efficiency <= 0
+  ) {
+    homeChargeResult.className = "home-charge-result";
+    homeChargeResult.innerHTML = `<div class="charge-error">請輸入有效的電量、電流、電壓與效率；家充電流最高以 22A 計算。</div>`;
+    return;
+  }
+
+  const percentNeeded = targetSoc - currentSoc;
+  const batteryKwhNeeded = (percentNeeded / 100) * briaBatteryKwh;
+  const wallPowerKw = (volts * amps) / 1000;
+  const carPowerKw = wallPowerKw * efficiency;
+  const chargeMinutes = (batteryKwhNeeded / carPowerKw) * 60;
+  const continuous = addChargingMinutes(startMinute, chargeMinutes, false);
+  const offPeakOnly = addChargingMinutes(startMinute, chargeMinutes, true);
+  const selectedPlan = mode === "continuous" ? continuous : offPeakOnly;
+  const nightsNeeded = Math.ceil(selectedPlan.elapsedMinutes / 1440);
+  const rangeAddedKm = percentNeeded * briaKmPerPercent;
+  const dailyOffPeakMinutes = offPeakEndMinute - offPeakStartMinute;
+  const offPeakFullWindowKwh = carPowerKw * (dailyOffPeakMinutes / 60);
+  const remainingKwhAfterOneOffPeak = Math.max(0, batteryKwhNeeded - offPeakFullWindowKwh);
+  const selectedModeText = mode === "continuous" ? "連續充滿" : "只用離峰優先";
+  const finishDayOffset = Math.floor(selectedPlan.finishMinute / 1440);
+  const finishDayText =
+    finishDayOffset === 0
+      ? "今天"
+      : finishDayOffset === 1
+        ? "明天"
+        : `第 ${finishDayOffset + 1} 天`;
+  const advice =
+    mode === "continuous"
+      ? `若從 ${formatClock(startMinute)} 連續充，約 ${formatClock(selectedPlan.finishMinute)} 充到 ${targetSoc}%。其中尖峰充電約 ${formatDuration(selectedPlan.peakCharged)}。`
+      : remainingKwhAfterOneOffPeak > 0
+        ? `只跑 00:00-09:00 離峰，第一晚最多約可補 ${offPeakFullWindowKwh.toFixed(1)} 度，還差約 ${remainingKwhAfterOneOffPeak.toFixed(1)} 度，要拆成約 ${nightsNeeded} 晚。`
+        : `建議預約 ${formatClock(startMinute)} 開始，這次可完全落在 00:00-09:00 離峰內充到 ${targetSoc}%。`;
+
+  homeChargeResult.className = "home-charge-result";
+  homeChargeResult.innerHTML = `
+    <div class="charge-result-head">
+      <span>${selectedModeText}｜${volts}V × ${amps}A × ${(efficiency * 100).toFixed(0)}% ≈ ${carPowerKw.toFixed(2)} kW 入車</span>
+      <strong>${finishDayText} ${formatClock(selectedPlan.finishMinute)} 充到 ${targetSoc}%</strong>
+    </div>
+    <div class="charge-metrics">
+      <article>
+        <span>需要補電</span>
+        <b>${batteryKwhNeeded.toFixed(1)} 度</b>
+      </article>
+      <article>
+        <span>純充電時間</span>
+        <b>${formatDuration(chargeMinutes)}</b>
+      </article>
+      <article>
+        <span>約增加里程</span>
+        <b>${rangeAddedKm.toFixed(0)} km</b>
+      </article>
+      <article>
+        <span>離峰實充</span>
+        <b>${formatDuration(selectedPlan.offPeakCharged)}</b>
+      </article>
+      <article>
+        <span>尖峰實充</span>
+        <b>${formatDuration(selectedPlan.peakCharged)}</b>
+      </article>
+      <article>
+        <span>總等待</span>
+        <b>${formatDuration(selectedPlan.elapsedMinutes)}</b>
+      </article>
+    </div>
+    <div class="charge-advice">
+      <strong>建議</strong>
+      <span>${advice}</span>
+    </div>
+    <p class="charge-footnote">這是依 57.7 度電池、1% 約 3 km、固定 00:00-09:00 離峰估算；實際時間會受車機限流、電壓波動、電池溫度與高電量末段降速影響。</p>
+  `;
+}
+
 function routeChargers(direction, tripKm) {
   const candidates = nonTeslaChargers
     .filter((charger) => charger.road === "國道一號")
@@ -658,3 +817,12 @@ tripForm.addEventListener("submit", (event) => {
   event.preventDefault();
   renderChargingPlan();
 });
+
+homeChargeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  renderHomeChargeCalculator();
+});
+
+homeChargeForm.addEventListener("input", renderHomeChargeCalculator);
+homeChargeForm.addEventListener("change", renderHomeChargeCalculator);
+renderHomeChargeCalculator();
