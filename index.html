@@ -3,222 +3,440 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bria 充電助手 | 家充離峰與國道快充</title>
+    <title>台灣電動車充電整合站</title>
     <meta
       name="description"
-      content="57.7 度鴻華 Bria 充電計算器，支援 22A 家充、00:00-09:00 離峰充電，以及國道一號、國道三號服務區快充站資訊。"
+      content="整合台灣高速公路快充、充電地圖、即時站況、路線補電、漫遊啟動示意、付款優惠、停車自動扣款與旅遊周邊的電動車充電網站。"
     />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f3b2e'/%3E%3Cpath d='M37 5 16 36h13l-3 23 23-35H35z' fill='%23f1c14b'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d3b66'/%3E%3Cpath d='M35 5 14 37h14l-3 22 25-36H35z' fill='%23f5b841'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#top" aria-label="回到首頁">
-        <span class="brand-mark">⚡</span>
-        <span>Bria 充電助手</span>
+      <a class="brand" href="#app" aria-label="回到充電整合站">
+        <span class="brand-mark">EV</span>
+        <span>
+          <strong>台灣電動車充電整合站</strong>
+          <small>AmpGO 功能整合版</small>
+        </span>
       </a>
-      <nav aria-label="頁面導覽">
-        <a href="#calculator">家充計算</a>
-        <a href="#freeway">國道快充</a>
-        <a href="#maps">地圖清單</a>
-        <a href="#sources">資料來源</a>
+      <nav aria-label="主要導覽">
+        <a href="#app">找站</a>
+        <a href="#route">路線補電</a>
+        <a href="#roaming">漫遊啟動</a>
+        <a href="#wallet">付款優惠</a>
+        <a href="#support">客服回報</a>
       </nav>
     </header>
 
-    <main id="top">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">57.7 kWh Hon Hai Bria</p>
-          <h1>到家看剩幾%，就知道離峰充到滿要多久。</h1>
-          <p class="lead">
-            固定用你的車設定：鴻華 Bria、57.7 度電池、家用充電樁最高 22A、00:00-09:00 優先離峰充電、1% 約 3 公里。
-          </p>
-        </div>
+    <main>
+      <section class="app-shell" id="app" aria-label="充電站查找工具">
+        <aside class="filter-panel" aria-label="搜尋與篩選">
+          <div class="panel-title">
+            <p class="eyebrow">Charging Map</p>
+            <h1>找站、看空位、導航、付款一次整理</h1>
+          </div>
 
-        <div class="hero-status" aria-label="車輛設定">
-          <article>
-            <span>車款</span>
-            <strong>鴻華 Bria</strong>
-          </article>
-          <article>
-            <span>電池容量</span>
-            <strong>57.7 度</strong>
-          </article>
-          <article>
-            <span>家充上限</span>
-            <strong>22A</strong>
-          </article>
-          <article>
-            <span>離峰時段</span>
-            <strong>00:00-09:00</strong>
-          </article>
+          <label class="field">
+            <span>搜尋站名、品牌、地區</span>
+            <input id="stationSearch" type="search" placeholder="例如：清水、U-POWER、CCS2" autocomplete="off" />
+          </label>
+
+          <div class="filter-grid">
+            <label class="field">
+              <span>路線</span>
+              <select id="roadFilter">
+                <option value="all">全部路線</option>
+                <option value="國道1號">國道1號</option>
+                <option value="國道3號">國道3號</option>
+                <option value="都會快充">都會快充</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>充電規格</span>
+              <select id="connectorFilter">
+                <option value="all">全部規格</option>
+                <option value="CCS1">CCS1</option>
+                <option value="CCS2">CCS2</option>
+                <option value="TPC">TPC</option>
+                <option value="J1772">J1772</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>站況</span>
+              <select id="statusFilter">
+                <option value="all">全部狀態</option>
+                <option value="available">有空位</option>
+                <option value="busy">接近滿站</option>
+                <option value="maintenance">維修提醒</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>排序</span>
+              <select id="sortBy">
+                <option value="availability">空位優先</option>
+                <option value="power">功率高到低</option>
+                <option value="price">費率低到高</option>
+                <option value="name">站名排序</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <label>
+              <input id="roamingOnly" type="checkbox" />
+              <span>只看可漫遊啟動</span>
+            </label>
+            <label>
+              <input id="parkingOnly" type="checkbox" />
+              <span>支援停車自動扣款</span>
+            </label>
+            <label>
+              <input id="favoriteOnly" type="checkbox" />
+              <span>只看收藏</span>
+            </label>
+          </div>
+
+          <div>
+            <div class="subhead">充電品牌</div>
+            <div class="brand-filters" id="brandFilters"></div>
+          </div>
+
+          <button class="secondary full" type="button" id="resetFilters">清除篩選</button>
+        </aside>
+
+        <section class="map-workspace" aria-label="地圖與站點列表">
+          <div class="map-panel">
+            <div class="map-toolbar">
+              <div>
+                <p class="eyebrow">Live Overview</p>
+                <h2>全台充電地圖</h2>
+              </div>
+              <div class="map-actions">
+                <a class="ghost-button" href="https://den-den.app/ampgo/" target="_blank" rel="noreferrer">AmpGO 官方</a>
+                <a class="primary-button" href="https://www.google.com/maps/search/%E9%9B%BB%E5%8B%95%E8%BB%8A%E5%85%85%E9%9B%BB%E7%AB%99" target="_blank" rel="noreferrer">開啟 Google 地圖</a>
+              </div>
+            </div>
+
+            <div class="map-canvas" aria-label="台灣充電站示意地圖">
+              <iframe
+                title="台灣地圖"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=119.45%2C21.75%2C122.45%2C25.55&amp;layer=mapnik"
+                loading="lazy"
+              ></iframe>
+              <div class="map-overlay"></div>
+              <div class="map-pins" id="mapPins"></div>
+              <div class="map-legend" aria-label="站況圖例">
+                <span><i class="pin available"></i>有空位</span>
+                <span><i class="pin busy"></i>接近滿站</span>
+                <span><i class="pin maintenance"></i>維修提醒</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-strip" id="summaryStrip" aria-live="polite"></div>
+
+          <div class="station-layout">
+            <section class="station-list-panel" aria-labelledby="stationListTitle">
+              <div class="list-head">
+                <div>
+                  <p class="eyebrow">Stations</p>
+                  <h2 id="stationListTitle">符合條件的充電站</h2>
+                </div>
+                <span id="resultCount"></span>
+              </div>
+              <div class="station-list" id="stationList"></div>
+            </section>
+
+            <aside class="detail-panel" id="stationDetail" aria-live="polite" aria-label="站點詳情"></aside>
+          </div>
+        </section>
+      </section>
+
+      <section class="module-band" id="route" aria-labelledby="routeTitle">
+        <div class="section-head">
+          <p class="eyebrow">Trip Planner</p>
+          <h2 id="routeTitle">路線補電與到站電量估算</h2>
+          <p>輸入起訖地與目前電量，網站會依可用站點、規格、空位與漫遊支援度，推薦順路補電點。</p>
+        </div>
+        <div class="module-grid two">
+          <form class="tool-panel" id="routeForm">
+            <div class="form-row">
+              <label class="field">
+                <span>出發地</span>
+                <input id="routeOrigin" type="text" value="台北" autocomplete="off" />
+              </label>
+              <label class="field">
+                <span>目的地</span>
+                <input id="routeDestination" type="text" value="高雄" autocomplete="off" />
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>目前電量</span>
+                <input id="routeSoc" type="number" min="1" max="100" value="42" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>到站保留電量</span>
+                <input id="routeReserve" type="number" min="5" max="40" value="15" inputmode="numeric" />
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>每 1% 可行駛公里</span>
+                <input id="routeKmPerPercent" type="number" min="1" max="8" step="0.1" value="3" inputmode="decimal" />
+              </label>
+              <label class="field">
+                <span>優先規格</span>
+                <select id="routeConnector">
+                  <option value="CCS2">CCS2</option>
+                  <option value="CCS1">CCS1</option>
+                  <option value="TPC">TPC</option>
+                  <option value="all">不限</option>
+                </select>
+              </label>
+            </div>
+            <fieldset class="segmented-field">
+              <legend>推薦偏好</legend>
+              <label>
+                <input type="radio" name="routeMode" value="fast" checked />
+                <span>最快補電</span>
+              </label>
+              <label>
+                <input type="radio" name="routeMode" value="cheap" />
+                <span>費率優先</span>
+              </label>
+              <label>
+                <input type="radio" name="routeMode" value="roaming" />
+                <span>漫遊優先</span>
+              </label>
+            </fieldset>
+            <button class="primary-button full" type="submit">重新計算路線</button>
+          </form>
+          <div class="tool-panel result-panel" id="routeResult"></div>
         </div>
       </section>
 
-      <section class="calculator-section" id="calculator" aria-labelledby="calculatorTitle">
+      <section class="module-band alt" id="roaming" aria-labelledby="roamingTitle">
         <div class="section-head">
-          <p class="eyebrow">Home Charging</p>
-          <h2 id="calculatorTitle">家充時間計算</h2>
-          <p>輸入到家剩餘電量，系統會算出補到 100% 需要幾度電、多久充滿，以及今晚離峰時間夠不夠。</p>
+          <p class="eyebrow">Roaming Charge</p>
+          <h2 id="roamingTitle">跨品牌漫遊啟動示意</h2>
+          <p>靜態網站可先完成流程介面：選站、選槍、掃碼欄位、預估費用與充電紀錄。真正啟動充電與付款需要後端串接充電商 API。</p>
         </div>
-
-        <div class="calculator-grid">
-          <form class="charge-form" id="chargeForm">
-            <label>
-              到家剩餘電量
-              <span class="input-suffix">
-                <input id="currentSoc" type="number" min="0" max="100" step="1" value="30" inputmode="numeric" required />
-                <b>%</b>
-              </span>
+        <div class="module-grid three">
+          <form class="tool-panel" id="roamingForm">
+            <label class="field">
+              <span>漫遊站點</span>
+              <select id="roamingStation"></select>
             </label>
-            <label>
-              目標電量
-              <span class="input-suffix">
-                <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" inputmode="numeric" required />
-                <b>%</b>
-              </span>
+            <label class="field">
+              <span>充電槍規格</span>
+              <select id="roamingConnector"></select>
             </label>
-            <div class="quick-buttons" aria-label="常用剩餘電量">
-              <button type="button" data-soc="10">10%</button>
-              <button type="button" data-soc="20">20%</button>
-              <button type="button" data-soc="30">30%</button>
-              <button type="button" data-soc="40">40%</button>
-              <button type="button" data-soc="50">50%</button>
-            </div>
-            <label>
-              開始插槍時間
-              <input id="startTime" type="time" value="00:00" required />
+            <label class="field">
+              <span>掃碼或輸入樁號</span>
+              <input id="roamingQr" type="text" placeholder="例如：QC-08-A" autocomplete="off" />
             </label>
-            <label>
-              家充電流
-              <span class="input-suffix">
-                <input id="amps" type="number" min="6" max="22" step="1" value="22" inputmode="numeric" required />
-                <b>A</b>
-              </span>
+            <label class="field">
+              <span>預計補電度數</span>
+              <input id="roamingKwh" type="number" min="1" max="100" value="18" inputmode="numeric" />
             </label>
-            <label>
-              家用電壓
-              <span class="input-suffix">
-                <input id="volts" type="number" min="100" max="250" step="1" value="220" inputmode="numeric" required />
-                <b>V</b>
-              </span>
-            </label>
-            <label>
-              充電效率
-              <span class="input-suffix">
-                <input id="efficiency" type="number" min="70" max="100" step="1" value="90" inputmode="numeric" required />
-                <b>%</b>
-              </span>
-            </label>
-            <fieldset class="mode-field">
-              <legend>充電策略</legend>
-              <div class="segmented">
-                <label>
-                  <input type="radio" name="chargeMode" value="offpeak" checked />
-                  <span>盡量只用離峰</span>
-                </label>
-                <label>
-                  <input type="radio" name="chargeMode" value="continuous" />
-                  <span>插上就連續充</span>
-                </label>
-              </div>
-            </fieldset>
+            <button class="primary-button full" type="submit">建立模擬充電</button>
           </form>
 
-          <div class="charge-result" id="chargeResult" aria-live="polite"></div>
+          <div class="tool-panel charging-session" id="chargingSession"></div>
+
+          <div class="tool-panel">
+            <div class="compact-head">
+              <p class="eyebrow">Records</p>
+              <h3>充電紀錄</h3>
+            </div>
+            <div class="activity-list" id="activityList"></div>
+          </div>
         </div>
       </section>
 
-      <section class="info-strip" aria-label="常用換算">
-        <article>
-          <span>1% 約可跑</span>
-          <strong>3 km</strong>
-        </article>
-        <article>
-          <span>100% 估算里程</span>
-          <strong>300 km</strong>
-        </article>
-        <article>
-          <span>22A 入車功率</span>
-          <strong id="powerText">4.36 kW</strong>
-        </article>
-        <article>
-          <span>一晚離峰最多補</span>
-          <strong id="oneNightText">39.2 度</strong>
-        </article>
-      </section>
-
-      <section class="freeway-section" id="freeway" aria-labelledby="freewayTitle">
-        <div class="section-head wide">
-          <p class="eyebrow">Freeway Fast Charging</p>
-          <h2 id="freewayTitle">國道一號、國道三號快充站</h2>
-          <p>
-            依高公局公開資料整理，國道服務區快充站全數 200kW 以上，約 7 成為 350/360kW。即時使用狀態出發前以 1968 App 與充電商 App 為準。
-          </p>
-        </div>
-
-        <div class="freeway-tabs" role="tablist" aria-label="國道路線">
-          <button class="active" type="button" data-road-filter="all">全部</button>
-          <button type="button" data-road-filter="國道1號">國道一號</button>
-          <button type="button" data-road-filter="國道3號">國道三號</button>
-        </div>
-
-        <div class="station-summary" id="stationSummary"></div>
-        <div class="station-grid" id="stationGrid"></div>
-      </section>
-
-      <section class="map-section" id="maps" aria-labelledby="mapsTitle">
+      <section class="module-band" id="wallet" aria-labelledby="walletTitle">
         <div class="section-head">
-          <p class="eyebrow">Map Links</p>
-          <h2 id="mapsTitle">補電地圖清單</h2>
-          <p>每個服務區都附 Google Maps 搜尋連結，適合上路前快速打開導航與確認現場資訊。</p>
+          <p class="eyebrow">Wallet</p>
+          <h2 id="walletTitle">付款、優惠券與停車自動扣款</h2>
+          <p>把信用卡、優惠券、訂閱折扣與停車場離場扣款集中在同一頁，讓車主出發前就能確認成本。</p>
         </div>
-        <div class="map-list" id="mapList"></div>
+        <div class="module-grid three">
+          <div class="tool-panel" id="paymentPanel">
+            <div class="compact-head">
+              <p class="eyebrow">Payment</p>
+              <h3>付款方式</h3>
+            </div>
+            <div class="payment-options" id="paymentOptions"></div>
+          </div>
+
+          <div class="tool-panel">
+            <div class="compact-head">
+              <p class="eyebrow">Coupons</p>
+              <h3>優惠與訂閱</h3>
+            </div>
+            <div class="coupon-list" id="couponList"></div>
+          </div>
+
+          <form class="tool-panel" id="parkingForm">
+            <div class="compact-head">
+              <p class="eyebrow">Parking</p>
+              <h3>停車自動扣款</h3>
+            </div>
+            <label class="field">
+              <span>車牌號碼</span>
+              <input id="licensePlate" type="text" placeholder="例如：EVA-1688" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>常用付款方式</span>
+              <select id="parkingPayment"></select>
+            </label>
+            <button class="secondary full" type="submit">儲存扣款設定</button>
+            <div class="inline-status" id="parkingStatus"></div>
+          </form>
+        </div>
       </section>
 
-      <section class="notes-section">
-        <article>
-          <h3>使用判斷</h3>
-          <p>
-            平日以離峰充電為主。如果今晚離峰不夠補滿，網站會提示今晚能補到的電量，以及要分幾晚或提前開始連續充。
-          </p>
-        </article>
-        <article>
-          <h3>國道補電</h3>
-          <p>
-            Bria 以 1% 約 3 公里粗估，長途建議保留 15%-20% 緩衝；服務區快充可當作臨時補電，不建議壓到低電量才找站。
-          </p>
-        </article>
+      <section class="module-band alt" id="home" aria-labelledby="homeTitle">
+        <div class="section-head">
+          <p class="eyebrow">Home Charging</p>
+          <h2 id="homeTitle">家充離峰時間計算</h2>
+          <p>保留原本的 Bria 家充計算，重新做成更清楚的控制台，支援目標電量、電流、電壓、效率與離峰策略。</p>
+        </div>
+        <div class="module-grid two">
+          <form class="tool-panel" id="homeForm">
+            <div class="form-row">
+              <label class="field">
+                <span>目前電量</span>
+                <input id="homeSoc" type="number" min="0" max="100" value="30" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>目標電量</span>
+                <input id="homeTarget" type="number" min="1" max="100" value="100" inputmode="numeric" />
+              </label>
+            </div>
+            <div class="quick-buttons" aria-label="快速電量">
+              <button type="button" data-home-soc="10">10%</button>
+              <button type="button" data-home-soc="20">20%</button>
+              <button type="button" data-home-soc="30">30%</button>
+              <button type="button" data-home-soc="50">50%</button>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>開始時間</span>
+                <input id="homeStart" type="time" value="00:00" />
+              </label>
+              <label class="field">
+                <span>家充電流</span>
+                <input id="homeAmps" type="number" min="6" max="22" value="22" inputmode="numeric" />
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>家用電壓</span>
+                <input id="homeVolts" type="number" min="100" max="250" value="220" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>充電效率</span>
+                <input id="homeEfficiency" type="number" min="70" max="100" value="90" inputmode="numeric" />
+              </label>
+            </div>
+            <fieldset class="segmented-field">
+              <legend>充電策略</legend>
+              <label>
+                <input type="radio" name="homeMode" value="offpeak" checked />
+                <span>只用離峰</span>
+              </label>
+              <label>
+                <input type="radio" name="homeMode" value="continuous" />
+                <span>插上就充</span>
+              </label>
+            </fieldset>
+          </form>
+          <div class="tool-panel result-panel" id="homeResult"></div>
+        </div>
+      </section>
+
+      <section class="module-band" id="nearby" aria-labelledby="nearbyTitle">
+        <div class="section-head">
+          <p class="eyebrow">Travel Map</p>
+          <h2 id="nearbyTitle">充電旅遊與周邊資訊</h2>
+          <p>顯示站點附近的便利商店、餐廳、咖啡、洗手間、景點、洗車與旅宿，適合長途補電時快速決定停留安排。</p>
+        </div>
+        <div class="travel-layout">
+          <div class="tool-panel">
+            <div class="compact-head">
+              <p class="eyebrow">Nearby</p>
+              <h3>目前站點周邊</h3>
+            </div>
+            <div class="nearby-list" id="nearbyList"></div>
+          </div>
+          <div class="tool-panel">
+            <div class="compact-head">
+              <p class="eyebrow">Favorites</p>
+              <h3>收藏站點</h3>
+            </div>
+            <div class="favorite-list" id="favoriteList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="module-band alt" id="support" aria-labelledby="supportTitle">
+        <div class="section-head">
+          <p class="eyebrow">Support</p>
+          <h2 id="supportTitle">24 小時客服與站點回報示意</h2>
+          <p>車主可回報故障、付款異常、車位被佔、費率不符或資料更新。靜態版會先保存本機回報紀錄，正式版可接客服後台。</p>
+        </div>
+        <div class="module-grid two">
+          <form class="tool-panel" id="supportForm">
+            <label class="field">
+              <span>回報站點</span>
+              <select id="supportStation"></select>
+            </label>
+            <label class="field">
+              <span>問題類型</span>
+              <select id="supportType">
+                <option value="充電槍故障">充電槍故障</option>
+                <option value="付款異常">付款異常</option>
+                <option value="車位被佔">車位被佔</option>
+                <option value="費率不符">費率不符</option>
+                <option value="資料更新">資料更新</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>補充說明</span>
+              <textarea id="supportNote" rows="5" placeholder="請描述現場狀況"></textarea>
+            </label>
+            <button class="primary-button full" type="submit">送出本機回報</button>
+          </form>
+          <div class="tool-panel result-panel" id="supportResult"></div>
+        </div>
       </section>
 
       <section class="sources-section" id="sources" aria-labelledby="sourcesTitle">
         <div class="section-head">
           <p class="eyebrow">Sources</p>
-          <h2 id="sourcesTitle">資料來源</h2>
+          <h2 id="sourcesTitle">資料來源與串接說明</h2>
+          <p>此網站以 AmpGO 公開頁面、App 商店描述與高速公路公開資料整理功能規格。即時空位、啟動充電、綁卡付款與停車扣款需正式 API 或後端服務串接。</p>
         </div>
         <div class="source-list">
-          <a href="https://www.freeway.gov.tw/Publish.aspx?cnid=2901&p=42378" target="_blank" rel="noreferrer">
-            高速公路局：國道服務區充電樁設備一覽表
-          </a>
-          <a href="https://www.freeway.gov.tw/Download_File.ashx?id=24594&FileConditionsID=1" target="_blank" rel="noreferrer">
-            高速公路局：國道服務區充電樁設備一覽表 PDF
-          </a>
-          <a href="https://1968.freeway.gov.tw" target="_blank" rel="noreferrer">
-            1968 國道即時路況與服務資訊
-          </a>
+          <a href="https://den-den.app/ampgo/" target="_blank" rel="noreferrer">AmpGO 電動車充電地圖官方頁</a>
+          <a href="https://den-den.app/" target="_blank" rel="noreferrer">電電數位 DEN-DEN 官方網站</a>
+          <a href="https://apps.apple.com/tw/app/id6470348628" target="_blank" rel="noreferrer">AmpGO App Store 頁面</a>
+          <a href="https://play.google.com/store/apps/details?id=com.denden.dendenapp" target="_blank" rel="noreferrer">AmpGO Google Play 頁面</a>
+          <a href="https://www.freeway.gov.tw/Publish.aspx?cnid=2901&p=42378" target="_blank" rel="noreferrer">高速公路服務區充電樁公開資料</a>
+          <a href="https://1968.freeway.gov.tw" target="_blank" rel="noreferrer">1968 國道即時路況與服務資訊</a>
         </div>
-        <p class="source-note">
-          本站為個人充電規劃工具；充電價格、啟用方式、即時可用槍數與現場位置可能變動，出發前請以官方與充電商即時資訊為準。
-        </p>
       </section>
     </main>
 
     <footer>
-      <span>Bria 充電助手</span>
-      <span>家充離峰優先，國道快充備援。</span>
+      <span>台灣電動車充電整合站</span>
+      <span>找電、補電、付款、停車與旅遊資訊集中管理</span>
     </footer>
 
     <script src="./script.js"></script>
