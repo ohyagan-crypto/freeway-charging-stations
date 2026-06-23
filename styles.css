@@ -474,6 +474,48 @@ main {
   margin: 16px 0;
 }
 
+.slow-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.slow-stats article {
+  display: grid;
+  min-height: 124px;
+  align-content: space-between;
+  gap: 8px;
+  padding: 16px;
+  color: #fff;
+  background: #10324a;
+  border-radius: var(--radius);
+}
+
+.slow-stats article:nth-child(2) {
+  background: #0d6b5d;
+}
+
+.slow-stats article:nth-child(3) {
+  background: #664b18;
+}
+
+.slow-stats article:nth-child(4) {
+  background: #475f30;
+}
+
+.slow-stats span,
+.slow-stats small {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.slow-stats strong {
+  font-size: 30px;
+  line-height: 1.05;
+}
+
 .summary-card {
   min-height: 96px;
   display: grid;
@@ -763,7 +805,9 @@ main {
 .favorite-list,
 .activity-list,
 .coupon-list,
-.payment-options {
+.payment-options,
+.spec-grid,
+.scenario-list {
   display: grid;
   gap: 9px;
 }
@@ -826,7 +870,7 @@ form.tool-panel {
 
 .segmented-field {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
   margin: 0;
   padding: 0;
@@ -960,7 +1004,9 @@ form.tool-panel {
 .coupon-card,
 .payment-card,
 .nearby-card,
-.favorite-card {
+.favorite-card,
+.spec-card,
+.scenario-card {
   display: grid;
   gap: 6px;
   padding: 12px;
@@ -973,7 +1019,9 @@ form.tool-panel {
 .coupon-card strong,
 .payment-card strong,
 .nearby-card strong,
-.favorite-card strong {
+.favorite-card strong,
+.spec-card strong,
+.scenario-card strong {
   line-height: 1.2;
 }
 
@@ -981,11 +1029,31 @@ form.tool-panel {
 .coupon-card span,
 .payment-card span,
 .nearby-card span,
-.favorite-card span {
+.favorite-card span,
+.spec-card span,
+.spec-card small,
+.spec-card p,
+.scenario-card span {
   color: var(--muted);
   line-height: 1.45;
   font-size: 13px;
   font-weight: 800;
+}
+
+.spec-card strong {
+  font-size: 21px;
+}
+
+.spec-card p {
+  margin: 0;
+}
+
+.slow-scenarios {
+  margin-top: 16px;
+}
+
+.scenario-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .payment-card.active {
@@ -1075,6 +1143,8 @@ footer {
   }
 
   .summary-strip,
+  .slow-stats,
+  .scenario-list,
   .source-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1113,6 +1183,8 @@ footer {
   .filter-grid,
   .form-row,
   .summary-strip,
+  .slow-stats,
+  .scenario-list,
   .source-list,
   .connector-grid,
   .detail-metrics,

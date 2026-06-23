@@ -25,6 +25,7 @@
       </a>
       <nav aria-label="主要導覽">
         <a href="#app">找站</a>
+        <a href="#slow">慢充資訊</a>
         <a href="#route">路線補電</a>
         <a href="#roaming">漫遊啟動</a>
         <a href="#wallet">付款優惠</a>
@@ -53,6 +54,7 @@
                 <option value="國道1號">國道1號</option>
                 <option value="國道3號">國道3號</option>
                 <option value="都會快充">都會快充</option>
+                <option value="目的地慢充">目的地慢充</option>
               </select>
             </label>
             <label class="field">
@@ -63,6 +65,8 @@
                 <option value="CCS2">CCS2</option>
                 <option value="TPC">TPC</option>
                 <option value="J1772">J1772</option>
+                <option value="Type2">Type2</option>
+                <option value="WallOutlet">WallOutlet</option>
               </select>
             </label>
             <label class="field">
@@ -97,6 +101,10 @@
             <label>
               <input id="favoriteOnly" type="checkbox" />
               <span>只看收藏</span>
+            </label>
+            <label>
+              <input id="slowOnly" type="checkbox" />
+              <span>只看 AC 慢充</span>
             </label>
           </div>
 
@@ -156,6 +164,88 @@
         </section>
       </section>
 
+      <section class="module-band alt" id="slow" aria-labelledby="slowTitle">
+        <div class="section-head">
+          <p class="eyebrow">AC Destination Charging</p>
+          <h2 id="slowTitle">AmpGO 慢充資訊整合</h2>
+          <p>把 AmpGO 會顯示的 AC 慢充規格、功率、適合停留情境、費率與等待時間加進網站。慢充適合停車時間較長的商場、旅宿、辦公、醫院、景點與夜間補電。</p>
+        </div>
+
+        <div class="slow-stats" aria-label="慢充統計">
+          <article>
+            <span>啟用中 AC 慢充槍</span>
+            <strong>8,811</strong>
+            <small>AmpGO 2025 Q2 統計</small>
+          </article>
+          <article>
+            <span>年成長率</span>
+            <strong>43%</strong>
+            <small>較去年同期增加 2,653 支</small>
+          </article>
+          <article>
+            <span>最大宗規格</span>
+            <strong>J1772</strong>
+            <small>約 75% 慢充槍</small>
+          </article>
+          <article>
+            <span>成長最快</span>
+            <strong>Type2</strong>
+            <small>年成長率約 76%</small>
+          </article>
+        </div>
+
+        <div class="module-grid two">
+          <div class="tool-panel">
+            <div class="compact-head">
+              <p class="eyebrow">Connector Guide</p>
+              <h3>慢充規格與使用情境</h3>
+            </div>
+            <div class="spec-grid" id="slowSpecCards"></div>
+          </div>
+
+          <form class="tool-panel" id="slowForm">
+            <div class="compact-head">
+              <p class="eyebrow">Stay Calculator</p>
+              <h3>慢充停留時間估算</h3>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>電池容量 kWh</span>
+                <input id="slowBattery" type="number" min="20" max="150" value="57.7" inputmode="decimal" />
+              </label>
+              <label class="field">
+                <span>慢充功率 kW</span>
+                <select id="slowPower">
+                  <option value="3.3">3.3 kW 一般插座</option>
+                  <option value="7" selected>7 kW J1772</option>
+                  <option value="11">11 kW Type2</option>
+                  <option value="22">22 kW 三相慢充</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span>目前電量</span>
+                <input id="slowCurrent" type="number" min="0" max="100" value="35" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>目標電量</span>
+                <input id="slowTarget" type="number" min="1" max="100" value="80" inputmode="numeric" />
+              </label>
+            </div>
+            <div class="result-panel" id="slowResult"></div>
+          </form>
+        </div>
+
+        <div class="tool-panel slow-scenarios">
+          <div class="compact-head">
+            <p class="eyebrow">Where To Use</p>
+            <h3>慢充最適合放在哪些站點</h3>
+          </div>
+          <div class="scenario-list" id="slowScenarioList"></div>
+        </div>
+      </section>
+
       <section class="module-band" id="route" aria-labelledby="routeTitle">
         <div class="section-head">
           <p class="eyebrow">Trip Planner</p>
@@ -195,6 +285,9 @@
                   <option value="CCS2">CCS2</option>
                   <option value="CCS1">CCS1</option>
                   <option value="TPC">TPC</option>
+                  <option value="J1772">J1772</option>
+                  <option value="Type2">Type2</option>
+                  <option value="WallOutlet">WallOutlet</option>
                   <option value="all">不限</option>
                 </select>
               </label>
@@ -212,6 +305,10 @@
               <label>
                 <input type="radio" name="routeMode" value="roaming" />
                 <span>漫遊優先</span>
+              </label>
+              <label>
+                <input type="radio" name="routeMode" value="slow" />
+                <span>慢充停留</span>
               </label>
             </fieldset>
             <button class="primary-button full" type="submit">重新計算路線</button>
@@ -428,6 +525,7 @@
           <a href="https://den-den.app/" target="_blank" rel="noreferrer">電電數位 DEN-DEN 官方網站</a>
           <a href="https://apps.apple.com/tw/app/id6470348628" target="_blank" rel="noreferrer">AmpGO App Store 頁面</a>
           <a href="https://play.google.com/store/apps/details?id=com.denden.dendenapp" target="_blank" rel="noreferrer">AmpGO Google Play 頁面</a>
+          <a href="https://den-den.app/ampgo-2025-q2-%E5%85%A8%E5%8F%B0%E5%85%85%E9%9B%BB%E7%AB%99%E6%95%B8%E6%93%9A%EF%BD%9C%E5%85%A8%E5%8F%B0%E5%BF%AB%E6%85%A2%E5%85%85%E5%85%85%E9%9B%BB%E8%A6%8F%E6%A0%BC%E6%AF%94%E9%87%8D%EF%BC%81/" target="_blank" rel="noreferrer">AmpGO 2025 Q2 快慢充規格統計</a>
           <a href="https://www.freeway.gov.tw/Publish.aspx?cnid=2901&p=42378" target="_blank" rel="noreferrer">高速公路服務區充電樁公開資料</a>
           <a href="https://1968.freeway.gov.tw" target="_blank" rel="noreferrer">1968 國道即時路況與服務資訊</a>
         </div>

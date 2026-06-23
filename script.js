@@ -433,6 +433,154 @@ const stations = [
     nearby: ["高雄展覽館", "駁二藝術特區", "夢時代"],
     note: "南部市區補電示意站，適合展示城市找站與停車整合。",
   },
+  {
+    id: "taipei-mall-ac",
+    road: "目的地慢充",
+    name: "台北信義商圈目的地慢充",
+    brand: "AmpGO 慢充",
+    direction: "商場停車",
+    region: "台北",
+    parking: "百貨地下停車場 B3 慢充區",
+    spaces: 18,
+    available: 11,
+    status: "available",
+    maxPower: 7,
+    price: 7.2,
+    connectors: ["J1772", "Type2"],
+    connectorPower: { J1772: 7, Type2: 11 },
+    roaming: true,
+    parkingPay: true,
+    coupon: true,
+    lat: 25.036,
+    lng: 121.566,
+    mapX: 69,
+    mapY: 18,
+    amenities: ["停車場", "百貨", "餐廳", "洗手間", "電影院"],
+    nearby: ["信義商圈", "台北 101", "松菸文創園區"],
+    slowUse: "逛街、用餐、看電影時補電，適合停留 2 到 5 小時。",
+    note: "目的地慢充示意站，重點不是快速翻桌，而是讓車主停車期間順手補電。",
+  },
+  {
+    id: "taichung-hotel-ac",
+    road: "目的地慢充",
+    name: "台中旅宿夜間慢充站",
+    brand: "AmpGO 慢充",
+    direction: "旅宿停車",
+    region: "台中",
+    parking: "飯店住客停車場 1F",
+    spaces: 12,
+    available: 5,
+    status: "available",
+    maxPower: 11,
+    price: 6.8,
+    connectors: ["Type2", "J1772", "TPC"],
+    connectorPower: { Type2: 11, J1772: 7, TPC: 7 },
+    roaming: true,
+    parkingPay: true,
+    coupon: true,
+    lat: 24.147,
+    lng: 120.673,
+    mapX: 46,
+    mapY: 50,
+    amenities: ["旅宿", "停車場", "早餐", "洗手間"],
+    nearby: ["勤美綠園道", "逢甲夜市", "台中國家歌劇院"],
+    slowUse: "住宿過夜補電最適合，晚間插上、隔天滿電出發。",
+    note: "慢充站應顯示可預約時段與住客停車規則，避免長時間佔位爭議。",
+  },
+  {
+    id: "tainan-hospital-ac",
+    road: "目的地慢充",
+    name: "台南醫院辦事慢充站",
+    brand: "AmpGO 慢充",
+    direction: "醫院停車",
+    region: "台南",
+    parking: "醫院立體停車場 4F",
+    spaces: 10,
+    available: 3,
+    status: "busy",
+    maxPower: 7,
+    price: 7.5,
+    connectors: ["J1772", "Type2"],
+    connectorPower: { J1772: 7, Type2: 11 },
+    roaming: true,
+    parkingPay: true,
+    coupon: false,
+    lat: 22.997,
+    lng: 120.212,
+    mapX: 35,
+    mapY: 76,
+    amenities: ["停車場", "醫院", "便利商店", "洗手間"],
+    nearby: ["台南火車站", "赤崁樓", "成大商圈"],
+    slowUse: "看診、洽公、陪病等待時補電，適合 1 到 4 小時停留。",
+    note: "醫院慢充需要清楚標示停車費、充電費與逾時占用提醒。",
+  },
+  {
+    id: "yilan-resort-ac",
+    road: "目的地慢充",
+    name: "宜蘭景點旅遊慢充站",
+    brand: "AmpGO 慢充",
+    direction: "景點停車",
+    region: "宜蘭",
+    parking: "景區停車場 A 區",
+    spaces: 8,
+    available: 2,
+    status: "busy",
+    maxPower: 7,
+    price: 6.5,
+    connectors: ["J1772", "WallOutlet"],
+    connectorPower: { J1772: 7, WallOutlet: 3.3 },
+    roaming: true,
+    parkingPay: false,
+    coupon: true,
+    lat: 24.702,
+    lng: 121.737,
+    mapX: 79,
+    mapY: 33,
+    amenities: ["景點", "停車場", "咖啡", "洗手間"],
+    nearby: ["礁溪溫泉", "幾米公園", "羅東夜市"],
+    slowUse: "泡湯、景點停留、咖啡休息時補電，適合 2 到 6 小時。",
+    note: "一般插座只適合緊急或長時間停留，網站已把 WallOutlet 與正式慢充分開標示。",
+  },
+];
+
+const slowConnectorIds = ["J1772", "Type2", "TPC", "WallOutlet"];
+
+const slowConnectorProfiles = [
+  {
+    id: "J1772",
+    name: "J1772",
+    power: "3.3-7 kW",
+    share: "約 75%",
+    summary: "台灣 AC 慢充最大宗規格，常見於商場、停車場、旅宿與公共目的地充電。",
+  },
+  {
+    id: "Type2",
+    name: "Type2",
+    power: "7-22 kW",
+    share: "約 16%",
+    summary: "新世代與歐規車常見規格，成長速度快，適合飯店、商辦與新建停車場優先配置。",
+  },
+  {
+    id: "TPC",
+    name: "TPC",
+    power: "7 kW 級",
+    share: "約 8%",
+    summary: "Tesla 車主常見慢充規格，適合旅宿與長時間停留地點作為備援。",
+  },
+  {
+    id: "WallOutlet",
+    name: "WallOutlet",
+    power: "1.5-3.3 kW",
+    share: "少量",
+    summary: "一般插座等級，只適合過夜、長停或緊急補電，不建議當主要旅程補電方案。",
+  },
+];
+
+const slowScenarios = [
+  { title: "商場與影城", detail: "停留 2 到 5 小時，適合 J1772 或 Type2，需整合停車折抵與離場扣款。" },
+  { title: "飯店與旅宿", detail: "停留 8 到 12 小時，適合夜間慢充，網站需顯示住客專用、預約與逾時規則。" },
+  { title: "辦公與醫院", detail: "停留 1 到 6 小時，適合顯示可用槍數、停車費、充電費與佔位回報。" },
+  { title: "景點與溫泉", detail: "停留時間不固定，適合加入周邊旅遊資訊，讓車主把補電和行程一起安排。" },
 ];
 
 const paymentMethods = [
@@ -472,6 +620,16 @@ function getStatusText(status) {
   if (status === "available") return "有空位";
   if (status === "busy") return "接近滿站";
   return "維修提醒";
+}
+
+function isSlowStation(station) {
+  return station.connectors.some((connector) => slowConnectorIds.includes(connector)) && station.maxPower <= 22;
+}
+
+function getConnectorPower(station, connector) {
+  if (station.connectorPower?.[connector]) return station.connectorPower[connector];
+  if (slowConnectorIds.includes(connector)) return Math.min(station.maxPower, connector === "WallOutlet" ? 3.3 : 7);
+  return station.maxPower;
 }
 
 function formatKwh(value) {
@@ -529,6 +687,7 @@ function getFilteredStations() {
   const roamingOnly = $("roamingOnly").checked;
   const parkingOnly = $("parkingOnly").checked;
   const favoriteOnly = $("favoriteOnly").checked;
+  const slowOnly = $("slowOnly").checked;
 
   let filtered = stations.filter((station) => {
     const searchHaystack = [
@@ -541,6 +700,7 @@ function getFilteredStations() {
       station.connectors.join(" "),
       station.amenities.join(" "),
       station.nearby.join(" "),
+      station.slowUse || "",
     ]
       .join(" ")
       .toLowerCase();
@@ -552,6 +712,7 @@ function getFilteredStations() {
     if (roamingOnly && !station.roaming) return false;
     if (parkingOnly && !station.parkingPay) return false;
     if (favoriteOnly && !state.favorites.has(station.id)) return false;
+    if (slowOnly && !isSlowStation(station)) return false;
     if (state.selectedBrands.size && !state.selectedBrands.has(station.brand)) return false;
     return true;
   });
@@ -578,6 +739,7 @@ function renderSummary(filtered) {
   const totalSpaces = filtered.reduce((sum, station) => sum + station.spaces, 0);
   const totalAvailable = filtered.reduce((sum, station) => sum + station.available, 0);
   const roamingCount = filtered.filter((station) => station.roaming).length;
+  const slowCount = filtered.filter(isSlowStation).length;
   const bestPower = filtered.length ? Math.max(...filtered.map((station) => station.maxPower)) : 0;
   const avgPrice = filtered.length ? filtered.reduce((sum, station) => sum + station.price, 0) / filtered.length : 0;
 
@@ -600,7 +762,7 @@ function renderSummary(filtered) {
     </article>
   `;
 
-  $("resultCount").textContent = `${roamingCount} 站支援漫遊`;
+  $("resultCount").textContent = `${roamingCount} 站支援漫遊，${slowCount} 站含慢充`;
 }
 
 function renderPins(filtered) {
@@ -653,12 +815,13 @@ function renderStationList(filtered) {
               <span class="tag">${station.road} ${station.direction}</span>
               <span class="tag ${station.status === "available" ? "green" : station.status === "busy" ? "amber" : "red"}">${getStatusText(station.status)}</span>
               ${station.roaming ? '<span class="tag green">可漫遊</span>' : '<span class="tag amber">需原廠 App</span>'}
+              ${isSlowStation(station) ? '<span class="tag">AC 慢充</span>' : ""}
               ${station.parkingPay ? '<span class="tag">停車扣款</span>' : ""}
             </span>
           </span>
           <span class="station-quick">
             <strong>${station.available}/${station.spaces}</strong>
-            <span>${station.maxPower} kW | ${station.price.toFixed(1)} 元/度</span>
+            <span>${isSlowStation(station) ? "慢充" : "快充"} | ${station.maxPower} kW | ${station.price.toFixed(1)} 元/度</span>
           </span>
         </button>
       `;
@@ -678,8 +841,8 @@ function renderStationDetail() {
       (connector) => `
         <article class="connector-card">
           <span>${connector}</span>
-          <strong>${station.maxPower} kW</strong>
-          <small>${station.available > 0 ? "可用槍數依現場為準" : "目前不建議前往"}</small>
+          <strong>${getConnectorPower(station, connector)} kW</strong>
+          <small>${slowConnectorIds.includes(connector) ? "AC 慢充，適合長停" : station.available > 0 ? "DC 快充，適合途中補電" : "目前不建議前往"}</small>
         </article>
       `
     )
@@ -710,7 +873,7 @@ function renderStationDetail() {
           <strong>${station.available}/${station.spaces}</strong>
         </article>
         <article class="metric">
-          <span>最高功率</span>
+          <span>${isSlowStation(station) ? "慢充功率" : "最高功率"}</span>
           <strong>${station.maxPower} kW</strong>
         </article>
         <article class="metric">
@@ -732,6 +895,7 @@ function renderStationDetail() {
         <h4>站點資訊</h4>
         <ul class="feature-list">
           <li>${station.road} ${station.direction}，位置：${station.parking}</li>
+          ${isSlowStation(station) ? `<li>${station.slowUse || "AC 慢充適合長時間停車、購物、住宿或辦事時補電。"}</li>` : ""}
           <li>${station.roaming ? "支援跨品牌漫遊啟動與付款示意" : "此站需使用原充電品牌 App 或現場方式啟動"}</li>
           <li>${station.coupon ? "可套用優惠券或訂閱折扣" : "目前沒有可用優惠券"}</li>
           <li>${station.note}</li>
@@ -850,11 +1014,15 @@ function renderRouteResult(event) {
   const neededPercent = Math.ceil(shortKm / kmPerPercent + reserve);
 
   let candidates = stations.filter((station) => station.status !== "maintenance");
-  if (connector !== "all") candidates = candidates.filter((station) => station.connectors.includes(connector));
+  if (connector !== "all" && (mode !== "slow" || slowConnectorIds.includes(connector))) {
+    candidates = candidates.filter((station) => station.connectors.includes(connector));
+  }
   if (mode === "roaming") candidates = candidates.filter((station) => station.roaming);
+  if (mode === "slow") candidates = candidates.filter((station) => isSlowStation(station) && station.roaming);
   candidates = candidates.sort((a, b) => {
     if (mode === "cheap") return a.price - b.price || b.available - a.available;
     if (mode === "roaming") return Number(b.roaming) - Number(a.roaming) || b.available - a.available;
+    if (mode === "slow") return b.available - a.available || a.price - b.price;
     return b.maxPower - a.maxPower || b.available - a.available;
   });
 
@@ -864,8 +1032,8 @@ function renderRouteResult(event) {
       (station, index) => `
         <article class="result-card ${index === 0 ? "good" : ""}">
           <strong>${index === 0 ? "推薦" : "備援"}：${station.name}</strong>
-          <span>${station.brand} | ${station.maxPower} kW | ${station.available}/${station.spaces} 空位 | ${station.price.toFixed(1)} 元/度</span>
-          <span>${station.roaming ? "可用網站漫遊啟動示意" : "需改用品牌 App"}，附近：${station.nearby.slice(0, 2).join("、")}</span>
+          <span>${station.brand} | ${isSlowStation(station) ? "AC 慢充" : "DC 快充"} | ${station.maxPower} kW | ${station.available}/${station.spaces} 空位 | ${station.price.toFixed(1)} 元/度</span>
+          <span>${station.roaming ? "可用網站漫遊啟動示意" : "需改用品牌 App"}，${isSlowStation(station) ? station.slowUse : `附近：${station.nearby.slice(0, 2).join("、")}`}</span>
         </article>
       `
     )
@@ -1003,6 +1171,71 @@ function renderActivityList() {
         <span>建立模擬充電後，紀錄會顯示在這裡。</span>
       </article>
     `;
+}
+
+function renderSlowChargingInfo() {
+  $("slowSpecCards").innerHTML = slowConnectorProfiles
+    .map(
+      (profile) => `
+        <article class="spec-card">
+          <span>${profile.id}</span>
+          <strong>${profile.name}</strong>
+          <small>${profile.power} | ${profile.share}</small>
+          <p>${profile.summary}</p>
+        </article>
+      `
+    )
+    .join("");
+
+  $("slowScenarioList").innerHTML = slowScenarios
+    .map(
+      (scenario) => `
+        <article class="scenario-card">
+          <strong>${scenario.title}</strong>
+          <span>${scenario.detail}</span>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderSlowCalculator() {
+  const batteryKwh = clamp(Number($("slowBattery").value), 20, 150);
+  const powerKw = clamp(Number($("slowPower").value), 1, 22);
+  const currentSoc = clamp(Number($("slowCurrent").value), 0, 100);
+  const targetSoc = clamp(Number($("slowTarget").value), 1, 100);
+  const effectivePower = powerKw * 0.9;
+
+  if (targetSoc <= currentSoc) {
+    $("slowResult").innerHTML = `
+      <article class="result-card warn">
+        <strong>請把目標電量調高</strong>
+        <span>慢充估算需要目標電量高於目前電量。</span>
+      </article>
+    `;
+    return;
+  }
+
+  const kwhNeeded = ((targetSoc - currentSoc) / 100) * batteryKwh;
+  const hours = kwhNeeded / effectivePower;
+  const addedKm = Math.round((targetSoc - currentSoc) * vehicle.kmPerPercent);
+  const stayType = hours <= 2 ? "短停辦事可完成" : hours <= 5 ? "適合逛街、用餐或看電影" : "適合旅宿過夜或長時間停車";
+
+  $("slowResult").innerHTML = `
+    <article class="result-card strong">
+      <span>${powerKw} kW 慢充，含 90% 效率估算</span>
+      <strong>${formatDuration(hours * 60)}</strong>
+      <span>從 ${currentSoc}% 補到 ${targetSoc}% 的預估停留時間。</span>
+    </article>
+    <article class="result-card good">
+      <strong>需要補 ${formatKwh(kwhNeeded)}</strong>
+      <span>約增加 ${addedKm} km 續航，${stayType}。</span>
+    </article>
+    <article class="result-card">
+      <strong>AmpGO 類似顯示重點</strong>
+      <span>慢充站應同時標示規格、功率、費率、停車費、可用槍數、是否可漫遊啟動與逾時占用規則。</span>
+    </article>
+  `;
 }
 
 function renderWallet() {
@@ -1228,6 +1461,7 @@ function bindEvents() {
     "roamingOnly",
     "parkingOnly",
     "favoriteOnly",
+    "slowOnly",
   ].forEach((id) => $(id).addEventListener("input", renderApp));
 
   $("resetFilters").addEventListener("click", () => {
@@ -1239,6 +1473,7 @@ function bindEvents() {
     $("roamingOnly").checked = false;
     $("parkingOnly").checked = false;
     $("favoriteOnly").checked = false;
+    $("slowOnly").checked = false;
     state.selectedBrands.clear();
     renderBrandFilters();
     renderApp();
@@ -1254,6 +1489,11 @@ function bindEvents() {
   $("roamingForm").addEventListener("submit", renderChargingSession);
 
   $("parkingForm").addEventListener("submit", handleParkingSave);
+
+  $("slowForm").addEventListener("submit", (event) => event.preventDefault());
+  ["slowBattery", "slowPower", "slowCurrent", "slowTarget"].forEach((id) => {
+    $(id).addEventListener("input", renderSlowCalculator);
+  });
 
   ["homeSoc", "homeTarget", "homeStart", "homeAmps", "homeVolts", "homeEfficiency"].forEach((id) => {
     $(id).addEventListener("input", renderHomeCalculator);
@@ -1272,10 +1512,12 @@ function bindEvents() {
 renderBrandFilters();
 renderRoamingOptions();
 renderWallet();
+renderSlowChargingInfo();
 bindEvents();
 renderApp();
 renderRouteResult();
 renderCurrentSession();
 renderActivityList();
+renderSlowCalculator();
 renderHomeCalculator();
 renderSupportResult();
