@@ -3,141 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>鴻華 Bria 充電助手｜國道快充與家充離峰計算</title>
+    <title>Bria 充電助手 | 家充離峰與國道快充</title>
     <meta
       name="description"
-      content="鴻華 Bria 57.7 度電池家充離峰計算，並整理國道一號與國道二號服務區快充／超充站資訊。"
+      content="57.7 度鴻華 Bria 充電計算器，支援 22A 家充、00:00-09:00 離峰充電，以及國道一號、國道三號服務區快充站資訊。"
     />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23b8e05f'/%3E%3Cpath d='M36 5 15 36h14l-3 23 23-34H35z' fill='%23101916'/%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@700;800;900&display=swap"
-      rel="stylesheet"
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f3b2e'/%3E%3Cpath d='M37 5 16 36h13l-3 23 23-35H35z' fill='%23f1c14b'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#top" aria-label="回到頁首">
-        <span class="brand-icon">⚡</span>
-        <span>Bria 補電助手</span>
+      <a class="brand" href="#top" aria-label="回到首頁">
+        <span class="brand-mark">⚡</span>
+        <span>Bria 充電助手</span>
       </a>
       <nav aria-label="頁面導覽">
-        <a href="#planner">規劃</a>
-        <a href="#home-charge">家充</a>
-        <a href="#live">即時</a>
-        <a href="#nearest">最近站</a>
-        <a href="#network">非特斯拉</a>
-        <a href="#slow">慢充</a>
-        <a href="#n1">槍數</a>
+        <a href="#calculator">家充計算</a>
+        <a href="#freeway">國道快充</a>
+        <a href="#maps">地圖清單</a>
+        <a href="#sources">資料來源</a>
       </nav>
     </header>
 
     <main id="top">
-      <section class="app-shell" id="planner">
-        <div class="planner-hero">
-          <div class="planner-copy">
-            <p class="label">Bria Charging Assistant</p>
-            <h1>出發前先算好，要不要充、去哪裡充。</h1>
-            <p class="lead">以你的鴻華 Bria 57.7 度電池、平均 5.3 km/度估算，排除 Tesla，只安排非特斯拉充電站。</p>
-          </div>
-
-          <div class="vehicle-card">
-            <span>你的車款</span>
-            <strong>鴻華 Bria</strong>
-            <div class="vehicle-metrics">
-              <b>57.7 度</b>
-              <b>5.3 km/度</b>
-              <b>約 306 km</b>
-            </div>
-          </div>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">57.7 kWh Hon Hai Bria</p>
+          <h1>到家看剩幾%，就知道離峰充到滿要多久。</h1>
+          <p class="lead">
+            固定用你的車設定：鴻華 Bria、57.7 度電池、家用充電樁最高 22A、00:00-09:00 優先離峰充電、1% 約 3 公里。
+          </p>
         </div>
 
-        <div class="dashboard-grid">
-          <form class="planner-form primary-panel" id="tripForm">
-            <label>
-              出發地
-              <span class="map-input-row">
-                <input id="startPlace" type="text" placeholder="例如：高雄市鼓山區南屏路599號" />
-                <button class="btn map-btn" type="button" data-place-search="startPlace">頁內搜尋</button>
-              </span>
-              <div class="place-results" id="startPlaceResults" hidden></div>
-            </label>
-            <label>
-              目的地
-              <span class="map-input-row">
-                <input id="endPlace" type="text" placeholder="例如：台中新都心或完整地址" />
-                <button class="btn map-btn" type="button" data-place-search="endPlace">頁內搜尋</button>
-              </span>
-              <div class="place-results" id="endPlaceResults" hidden></div>
-            </label>
-            <label>
-              行駛方向
-              <select id="routeDirection">
-                <option value="south">北往南</option>
-                <option value="north">南往北</option>
-              </select>
-            </label>
-            <label>
-              全程預估距離（公里）
-              <input id="tripKm" type="number" min="1" step="1" placeholder="請填導航顯示的實際公里數" required />
-              <small class="field-hint">搜尋並選定出發地、目的地後，系統會自動估算並回填。</small>
-            </label>
-            <label>
-              目前電量（%）
-              <input id="currentSoc" type="number" min="1" max="100" step="1" value="80" required />
-            </label>
-            <label>
-              希望抵達保留電量（%）
-              <input id="reserveSoc" type="number" min="0" max="50" step="1" value="15" required />
-            </label>
-            <label>
-              車款參數
-              <input value="鴻華 Bria｜57.7 度｜5.3 km/度" disabled />
-            </label>
-            <label>
-              充電站篩選
-              <input value="排除 Tesla，只排非特斯拉站點" disabled />
-            </label>
-            <div class="form-actions">
-              <button class="btn primary" type="submit">安排充電路線</button>
-              <button class="btn secondary" id="estimateDistanceBtn" type="button">搜尋並估算公里數</button>
-            </div>
-          </form>
-
-          <div class="planner-result result-panel" id="plannerResult">
-            <strong>輸入行程資料後，我會幫你規劃。</strong>
-            <span>請先在出發地與目的地按「頁內搜尋」，選到正確位置後會在下方地圖預覽路線，並自動把公里數填入表單。</span>
-          </div>
-        </div>
-
-        <div class="map-preview-panel">
-          <div class="map-preview-head">
-            <div>
-              <strong>頁內地圖搜尋</strong>
-              <span id="mapPreviewStatus">尚未搜尋位置</span>
-            </div>
-            <button class="btn secondary" id="refreshMapPreviewBtn" type="button">更新地圖</button>
-          </div>
-          <iframe
-            id="mapPreview"
-            title="Google 地圖預覽"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps?q=%E5%8F%B0%E7%81%A3&output=embed"
-          ></iframe>
-        </div>
-      </section>
-
-      <section class="section home-charge-section" id="home-charge" aria-labelledby="homeChargeTitle">
-        <div class="section-head">
-          <p class="label">Home Off-Peak Charging</p>
-          <h2 id="homeChargeTitle">到家剩幾 %，算離峰充滿時間</h2>
-          <p>固定用你的鴻華 Bria 57.7 度電池、家用充電樁最高 22A、1% 約 3 公里估算；離峰充電時間固定 00:00-09:00。</p>
-        </div>
-
-        <div class="home-charge-facts" aria-label="你的家充固定設定">
+        <div class="hero-status" aria-label="車輛設定">
           <article>
             <span>車款</span>
             <strong>鴻華 Bria</strong>
@@ -155,192 +56,169 @@
             <strong>00:00-09:00</strong>
           </article>
         </div>
+      </section>
 
-        <div class="home-charge-panel">
-          <form class="home-charge-form" id="homeChargeForm">
+      <section class="calculator-section" id="calculator" aria-labelledby="calculatorTitle">
+        <div class="section-head">
+          <p class="eyebrow">Home Charging</p>
+          <h2 id="calculatorTitle">家充時間計算</h2>
+          <p>輸入到家剩餘電量，系統會算出補到 100% 需要幾度電、多久充滿，以及今晚離峰時間夠不夠。</p>
+        </div>
+
+        <div class="calculator-grid">
+          <form class="charge-form" id="chargeForm">
             <label>
-              到家剩幾 %
-              <input id="homeSoc" type="number" min="0" max="100" step="1" value="30" inputmode="numeric" required />
+              到家剩餘電量
+              <span class="input-suffix">
+                <input id="currentSoc" type="number" min="0" max="100" step="1" value="30" inputmode="numeric" required />
+                <b>%</b>
+              </span>
             </label>
             <label>
-              目標電量 %
-              <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" inputmode="numeric" required />
+              目標電量
+              <span class="input-suffix">
+                <input id="targetSoc" type="number" min="1" max="100" step="1" value="100" inputmode="numeric" required />
+                <b>%</b>
+              </span>
             </label>
-            <div class="soc-shortcuts" aria-label="常用到家電量">
-              <button type="button" data-home-soc="10">10%</button>
-              <button type="button" data-home-soc="20">20%</button>
-              <button type="button" data-home-soc="30">30%</button>
-              <button type="button" data-home-soc="40">40%</button>
-              <button type="button" data-home-soc="50">50%</button>
+            <div class="quick-buttons" aria-label="常用剩餘電量">
+              <button type="button" data-soc="10">10%</button>
+              <button type="button" data-soc="20">20%</button>
+              <button type="button" data-soc="30">30%</button>
+              <button type="button" data-soc="40">40%</button>
+              <button type="button" data-soc="50">50%</button>
             </div>
             <label>
-              開始充電時間
-              <input id="chargeStartTime" type="time" value="00:00" required />
+              開始插槍時間
+              <input id="startTime" type="time" value="00:00" required />
             </label>
             <label>
-              家充電流 A
-              <input id="homeChargeAmps" type="number" min="6" max="22" step="1" value="22" inputmode="numeric" required />
+              家充電流
+              <span class="input-suffix">
+                <input id="amps" type="number" min="6" max="22" step="1" value="22" inputmode="numeric" required />
+                <b>A</b>
+              </span>
             </label>
             <label>
-              充電電壓 V
-              <input id="homeChargeVolts" type="number" min="100" max="250" step="1" value="220" inputmode="numeric" required />
+              家用電壓
+              <span class="input-suffix">
+                <input id="volts" type="number" min="100" max="250" step="1" value="220" inputmode="numeric" required />
+                <b>V</b>
+              </span>
             </label>
             <label>
-              入車效率 %
-              <input id="chargeEfficiency" type="number" min="70" max="100" step="1" value="90" inputmode="numeric" required />
+              充電效率
+              <span class="input-suffix">
+                <input id="efficiency" type="number" min="70" max="100" step="1" value="90" inputmode="numeric" required />
+                <b>%</b>
+              </span>
             </label>
             <fieldset class="mode-field">
-              <legend>計算模式</legend>
-              <div class="mode-toggle" role="radiogroup" aria-label="計算模式">
+              <legend>充電策略</legend>
+              <div class="segmented">
                 <label>
                   <input type="radio" name="chargeMode" value="offpeak" checked />
-                  <span>離峰優先</span>
+                  <span>盡量只用離峰</span>
                 </label>
                 <label>
                   <input type="radio" name="chargeMode" value="continuous" />
-                  <span>連續充滿</span>
+                  <span>插上就連續充</span>
                 </label>
               </div>
             </fieldset>
-            <button class="btn primary home-charge-submit" type="submit">計算充滿時間</button>
           </form>
 
-          <div class="home-charge-result" id="homeChargeResult" aria-live="polite"></div>
+          <div class="charge-result" id="chargeResult" aria-live="polite"></div>
         </div>
       </section>
 
-      <section class="quick-strip" id="live">
+      <section class="info-strip" aria-label="常用換算">
         <article>
-          <span>即時更新</span>
-          <strong id="liveUpdated">讀取中</strong>
-          <small>嘗試讀取公開即時狀態</small>
+          <span>1% 約可跑</span>
+          <strong>3 km</strong>
         </article>
         <article>
-          <span>非特斯拉候選</span>
-          <strong>20 站</strong>
-          <small>國道 1、3、5、6 內建資料池</small>
+          <span>100% 估算里程</span>
+          <strong>300 km</strong>
         </article>
         <article>
-          <span>Bria 滿電估算</span>
-          <strong>約 306 km</strong>
-          <small>57.7 度 × 5.3 km/度</small>
+          <span>22A 入車功率</span>
+          <strong id="powerText">4.36 kW</strong>
         </article>
         <article>
-          <span>家充離峰</span>
-          <strong>22A</strong>
-          <small>00:00-09:00 優先充</small>
+          <span>一晚離峰最多補</span>
+          <strong id="oneNightText">39.2 度</strong>
         </article>
       </section>
 
-      <section class="section nearest" id="nearest">
-        <div class="nearest-card">
-          <div>
-            <p class="label">GPS Nearest Station</p>
-            <h2>找離你最近的國道快充</h2>
-            <p>
-              點下按鈕後，瀏覽器會詢問定位權限。定位只在你的裝置上用來計算最近的國道快充，不會送到我們的伺服器保存。
-            </p>
-          </div>
-          <div class="nearest-action">
-            <button class="btn primary" id="locateBtn" type="button">使用 GPS 找最近充電站</button>
-            <div class="nearest-result" id="nearestResult">尚未定位</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="n1">
-        <div class="section-head">
-          <p class="label">National Freeway 1</p>
-          <h2>國道一號快充／超充站槍數</h2>
-          <p>以下以服務區與方向整理，數字單位皆為「充電槍」。</p>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>休息站／服務區</th>
-                <th>CCS1</th>
-                <th>CCS2</th>
-                <th>合計</th>
-                <th>當下可查價格</th>
-                <th>即時使用狀態</th>
-              </tr>
-            </thead>
-            <tbody id="stationRows"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="section chart-section">
-        <div class="section-head">
-          <p class="label">Quick Compare</p>
-          <h2>各站槍數快速比較</h2>
-          <p>長條越長代表該站 CCS1、CCS2 合計槍數越多。</p>
-        </div>
-        <div class="bars" id="bars"></div>
-      </section>
-
-      <section class="section network" id="network">
-        <div class="section-head">
-          <p class="label">Non-Tesla Network</p>
-          <h2>非特斯拉充電站資料池</h2>
-          <p>目前公開頁先內建可用的非特斯拉候選站，路線規劃會優先從這些站點安排；全台完整即時站點需串 TDX 充電站 API，正式版建議用後端代理保護授權金鑰。</p>
-        </div>
-        <div class="network-list" id="networkList"></div>
-      </section>
-
-      <section class="section network slow-network" id="slow">
-        <div class="section-head">
-          <p class="label">Non-Tesla Slow Charging</p>
-          <h2>非特斯拉慢充資料待補</h2>
-          <p>慢充站地址與座標不做推估；確認來源後才會列入站點清單。</p>
-        </div>
-        <div class="network-list slow-list" id="slowList"></div>
-      </section>
-
-      <section class="section n2" id="n2">
-        <div class="empty-card">
-          <p class="label">National Freeway 2</p>
-          <h2>國道二號目前沒有服務區／休息站快充站可列</h2>
+      <section class="freeway-section" id="freeway" aria-labelledby="freewayTitle">
+        <div class="section-head wide">
+          <p class="eyebrow">Freeway Fast Charging</p>
+          <h2 id="freewayTitle">國道一號、國道三號快充站</h2>
           <p>
-            目前公開資料查到的國道快充路網包含國道 1、3、5、6 號共 23 站，沒有列到國道二號，因此本頁國道二號 CCS1、CCS2 槍數以 0 筆處理。
+            依高公局公開資料整理，國道服務區快充站全數 200kW 以上，約 7 成為 350/360kW。即時使用狀態出發前以 1968 App 與充電商 App 為準。
           </p>
         </div>
+
+        <div class="freeway-tabs" role="tablist" aria-label="國道路線">
+          <button class="active" type="button" data-road-filter="all">全部</button>
+          <button type="button" data-road-filter="國道1號">國道一號</button>
+          <button type="button" data-road-filter="國道3號">國道三號</button>
+        </div>
+
+        <div class="station-summary" id="stationSummary"></div>
+        <div class="station-grid" id="stationGrid"></div>
       </section>
 
-      <section class="section sources" id="sources">
+      <section class="map-section" id="maps" aria-labelledby="mapsTitle">
         <div class="section-head">
-          <p class="label">Sources</p>
-          <h2>資料來源</h2>
+          <p class="eyebrow">Map Links</p>
+          <h2 id="mapsTitle">補電地圖清單</h2>
+          <p>每個服務區都附 Google Maps 搜尋連結，適合上路前快速打開導航與確認現場資訊。</p>
+        </div>
+        <div class="map-list" id="mapList"></div>
+      </section>
+
+      <section class="notes-section">
+        <article>
+          <h3>使用判斷</h3>
+          <p>
+            平日以離峰充電為主。如果今晚離峰不夠補滿，網站會提示今晚能補到的電量，以及要分幾晚或提前開始連續充。
+          </p>
+        </article>
+        <article>
+          <h3>國道補電</h3>
+          <p>
+            Bria 以 1% 約 3 公里粗估，長途建議保留 15%-20% 緩衝；服務區快充可當作臨時補電，不建議壓到低電量才找站。
+          </p>
+        </article>
+      </section>
+
+      <section class="sources-section" id="sources" aria-labelledby="sourcesTitle">
+        <div class="section-head">
+          <p class="eyebrow">Sources</p>
+          <h2 id="sourcesTitle">資料來源</h2>
         </div>
         <div class="source-list">
           <a href="https://www.freeway.gov.tw/Publish.aspx?cnid=193&p=37511" target="_blank" rel="noreferrer">
-            高公局國道充電路網全面上線
+            高速公路局：國道服務區充電路網全面上線
           </a>
-          <a
-            href="https://www.motc.gov.tw/ch/app/news_list/view?id=14&module=news&serno=93536a10-a889-45d8-bd7b-fc94b6c384d9"
-            target="_blank"
-            rel="noreferrer"
-          >
-            交通部新聞稿
+          <a href="https://www.freeway.gov.tw/Download_File_Direct.ashx?FileConditionsID=1&id=480" target="_blank" rel="noreferrer">
+            高速公路局：服務區充電樁 CSV 公開資料
           </a>
-          <a href="https://www.fetnet.net/content/cbu/tw/lifecircle/tech/2024/09/highway.html" target="_blank" rel="noreferrer">
-            國道服務區充電樁數量整理
-          </a>
-          <a href="https://www.opendata.vip/tdx/evFreeway" target="_blank" rel="noreferrer">
-            全台高速公路服務區充電樁即時查詢
+          <a href="https://1968.freeway.gov.tw" target="_blank" rel="noreferrer">
+            1968 國道即時路況與服務資訊
           </a>
         </div>
         <p class="source-note">
-          即時狀態與價格來源可能因業者、會員身份、時段或公開頁可讀取狀態而變動，實際充電前請以充電服務商 App 或現場公告為準。
+          本站為個人充電規劃工具；充電價格、啟用方式、即時可用槍數與現場位置可能變動，出發前請以官方與充電商即時資訊為準。
         </p>
       </section>
     </main>
 
     <footer>
-      <span>國道快充資料整理</span>
-      <span>出發前仍建議以充電服務商即時狀態為準。</span>
+      <span>Bria 充電助手</span>
+      <span>家充離峰優先，國道快充備援。</span>
     </footer>
 
     <script src="./script.js"></script>
