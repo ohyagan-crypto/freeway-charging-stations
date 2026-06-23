@@ -148,7 +148,7 @@ const stations = [
     name: "清水服務區",
     direction: "雙向",
     parking: "小型車 A 區",
-    spaces: 6,
+    spaces: 10,
     plugs: "DC-CCS1、CCS2、TPC",
     mapsQuery: "國道三號 清水服務區 充電站",
   },
